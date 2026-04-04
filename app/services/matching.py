@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.models import Goal, Profile
+from app.models import CachedRanking, Goal, Profile
 from app.services.groq_client import chat_json
 
 
@@ -104,7 +104,15 @@ Candidates:
 
 
 def get_ranked_contacts(goal: Goal, db: Session) -> list[dict]:
-    """Full pipeline: prefilter → AI rank → return enriched results."""
+    """Full pipeline: check cache → prefilter → AI rank → cache → return."""
+    # Check cache first
+    cached = db.query(CachedRanking).filter(CachedRanking.goal_id == goal.id).order_by(CachedRanking.rank_order).all()
+    if cached:
+        return [
+            {"profile": c.profile, "score": c.score, "reason": c.reason}
+            for c in cached
+        ]
+
     prefiltered = prefilter_profiles(goal, db)
 
     if not prefiltered:
@@ -118,6 +126,17 @@ def get_ranked_contacts(goal: Goal, db: Session) -> list[dict]:
             {"id": p.id, "score": round(pre_score * 10, 1), "reason": "Matched by role, skills, and experience"}
             for p, pre_score in prefiltered[:20]
         ]
+
+    # Cache results
+    for i, r in enumerate(rankings):
+        db.add(CachedRanking(
+            goal_id=goal.id,
+            profile_id=r["id"],
+            score=r["score"],
+            reason=r["reason"],
+            rank_order=i,
+        ))
+    db.commit()
 
     # Enrich with full profile data
     profile_map = {p.id: p for p, _ in prefiltered}

@@ -219,7 +219,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 - [x] 3.3 Matching engine
   - [x] 3.3.1 app/services/matching.py — prefilter_profiles() keyword/tag overlap scoring
   - [x] 3.3.2 app/services/matching.py — ai_rank_profiles() single Groq call for top ~50
-  - [ ] 3.3.3 Store rankings in DB (cache results per goal)
+  - [x] 3.3.3 Store rankings in DB (cache results per goal)
 
 - [x] 3.4 Contacts page
   - [x] 3.4.1 app/templates/contacts.html — ranked list with score, match reason, checkboxes

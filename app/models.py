@@ -113,3 +113,16 @@ class SendConfig(Base):
     schedule_end_hour = Column(Integer, default=17)
 
     goal = relationship("Goal", back_populates="send_config")
+
+
+class CachedRanking(Base):
+    __tablename__ = "cached_rankings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    goal_id = Column(Integer, ForeignKey("goals.id"), nullable=False)
+    profile_id = Column(Integer, ForeignKey("profiles.id"), nullable=False)
+    score = Column(Float, default=0.0)
+    reason = Column(Text, default="")
+    rank_order = Column(Integer, default=0)
+
+    profile = relationship("Profile")
