@@ -259,7 +259,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 4.4.4 app/routers/pages.py — GET /goals/{id}/outreach
   - [x] 4.4.5 HTMX inline editing for message body
 
-- [ ] 4.5 Verify: select contacts → pick template → see personalized drafts → edit and approve
+- [x] 4.5 Verify: select contacts → pick template → see personalized drafts → edit and approve
 
 ---
 
