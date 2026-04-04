@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Networking Copilot{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        nav ul li a.active { font-weight: bold; text-decoration: underline; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+        .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.8rem; }
+        .badge-positive { background: #d4edda; color: #155724; }
+        .badge-neutral { background: #fff3cd; color: #856404; }
+        .badge-negative { background: #f8d7da; color: #721c24; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .stat-card { text-align: center; padding: 1.5rem; }
+        .stat-card h2 { margin-bottom: 0.25rem; }
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="container">
+        <ul>
+            <li><strong>AI Networking Copilot</strong></li>
+        </ul>
+        <ul>
+            <li><a href="/" {% if active_page == "dashboard" %}class="active"{% endif %}>Dashboard</a></li>
+            <li><a href="/goals/new" {% if active_page == "goals" %}class="active"{% endif %}>New Campaign</a></li>
+        </ul>
+    </nav>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

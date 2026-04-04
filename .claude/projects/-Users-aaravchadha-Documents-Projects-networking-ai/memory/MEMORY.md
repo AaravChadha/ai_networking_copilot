@@ -1,0 +1,1 @@
+- [Workflow preferences](feedback_workflow.md) — task-driven, grouped subtasks, auto-checkoff, commit without coauthor

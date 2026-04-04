@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Networking Copilot{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+{% if goals %}
+<div class="stats-grid" style="margin-bottom: 2rem;">
+    <article class="stat-card">
+        <h2>{{ goals | length }}</h2>
+        <p>Active Campaigns</p>
+    </article>
+</div>
+
+<h2>Your Campaigns</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Goal</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for goal in goals %}
+        <tr>
+            <td>{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</td>
+            <td>{{ goal.goal_type }}</td>
+            <td><span class="badge badge-positive">{{ goal.status }}</span></td>
+            <td>{{ goal.created_at.strftime('%b %d, %Y') }}</td>
+            <td><a href="/goals/{{ goal.id }}/contacts" role="button" class="outline">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<article style="text-align: center; padding: 3rem;">
+    <h2>No campaigns yet</h2>
+    <p>Create your first networking campaign to get started.</p>
+    <a href="/goals/new" role="button">New Campaign</a>
+</article>
+{% endif %}
+{% endblock %}
