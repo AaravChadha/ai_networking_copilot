@@ -227,7 +227,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 3.4.3 app/routers/contacts.py — GET /api/goals/{id}/matches
   - [x] 3.4.4 app/routers/pages.py — GET /goals/{id}/contacts
 
-- [ ] 3.5 Verify: create goal → see ranked contacts with scores and reasons
+- [x] 3.5 Verify: create goal → see ranked contacts with scores and reasons
 
 ---
 
