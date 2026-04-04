@@ -51,9 +51,10 @@ def seed_templates():
 
 app = FastAPI(title="AI Networking Copilot", lifespan=lifespan)
 
-from app.routers import pages, goals, contacts, messages  # noqa: E402
+from app.routers import pages, goals, contacts, messages, inbox  # noqa: E402
 
 app.include_router(pages.router)
 app.include_router(goals.router)
 app.include_router(contacts.router)
 app.include_router(messages.router)
+app.include_router(inbox.router)

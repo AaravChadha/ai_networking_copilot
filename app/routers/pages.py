@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.templating import templates
-from app.models import Goal, Message, OutreachTemplate, SendConfig
+from app.models import Goal, Message, OutreachTemplate, Reply, SendConfig
 from app.services.matching import get_ranked_contacts
 from app.services.outreach import batch_generate
 from app.services.templates import get_templates
@@ -122,4 +122,19 @@ async def outreach_page(request: Request, goal_id: int, db: Session = Depends(ge
     return templates.TemplateResponse(request, "outreach.html", {
         "goal": goal,
         "messages": messages,
+    })
+
+
+@router.get("/goals/{goal_id}/inbox")
+async def inbox_page(request: Request, goal_id: int, db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    replies = (
+        db.query(Reply)
+        .join(Message, Reply.message_id == Message.id)
+        .filter(Message.goal_id == goal_id)
+        .all()
+    )
+    return templates.TemplateResponse(request, "inbox.html", {
+        "goal": goal,
+        "replies": replies,
     })
