@@ -145,6 +145,20 @@ async def inbox_page(request: Request, goal_id: int, db: Session = Depends(get_d
     })
 
 
+@router.get("/goals/{goal_id}/inbox/{message_id}")
+async def chat_page(request: Request, goal_id: int, message_id: int, db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    threads = _build_threads(db, goal_id)
+    # Find the active thread
+    active_thread = next((t for t in threads if t["message"].id == message_id), None)
+    return templates.TemplateResponse(request, "chat.html", {
+        "goal": goal,
+        "threads": threads,
+        "active_thread": active_thread,
+        "active_message_id": message_id,
+    })
+
+
 def _build_threads(db: Session, goal_id: int = None) -> list[dict]:
     """Group replies into conversation threads by message."""
     query = db.query(Reply).join(Message, Reply.message_id == Message.id)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -82,6 +82,11 @@ async def send_follow_up(request: Request, reply_id: int, db: Session = Depends(
     # Continue the conversation — saves outbound, generates new inbound reply
     continue_conversation(reply.id, follow_up_body, db)
 
+    # If called from chat page, redirect back
+    redirect_url = form.get("redirect")
+    if redirect_url:
+        return RedirectResponse(url=redirect_url, status_code=303)
+
     thread = _get_thread(reply.message_id, db)
     return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 
@@ -93,6 +98,13 @@ async def skip_follow_up(request: Request, reply_id: int, db: Session = Depends(
         reply.follow_up_status = "skipped"
         db.commit()
         db.refresh(reply)
+
+    # If called from chat page, redirect back
+    form = await request.form()
+    redirect_url = form.get("redirect")
+    if redirect_url:
+        return RedirectResponse(url=redirect_url, status_code=303)
+
     thread = _get_thread(reply.message_id, db)
     return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 

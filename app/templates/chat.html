@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - {{ active_thread.message.profile.name }} - AI Networking Copilot{% endblock %}
+
+{% block head %}
+<style>
+    .chat-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 0;
+        height: calc(100vh - 120px);
+        border: 1px solid var(--pico-muted-border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .chat-sidebar {
+        border-right: 1px solid var(--pico-muted-border-color);
+        overflow-y: auto;
+        background: var(--pico-card-background-color);
+    }
+    .chat-sidebar a {
+        display: block;
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        color: inherit;
+        border-bottom: 1px solid var(--pico-muted-border-color);
+    }
+    .chat-sidebar a:hover {
+        background: var(--pico-secondary-focus);
+    }
+    .chat-sidebar a.active-thread {
+        background: var(--pico-primary-focus);
+        border-left: 3px solid var(--pico-primary);
+    }
+    .chat-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .chat-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--pico-muted-border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .chat-bubble {
+        max-width: 75%;
+        padding: 0.6rem 0.9rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        white-space: pre-wrap;
+    }
+    .bubble-them {
+        align-self: flex-start;
+        background: #dcf8c6;
+        color: #1a1a1a;
+        border-bottom-left-radius: 4px;
+    }
+    .bubble-you {
+        align-self: flex-end;
+        background: #d1e7ff;
+        color: #1a1a1a;
+        border-bottom-right-radius: 4px;
+    }
+    .bubble-label {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        margin-bottom: 0.15rem;
+    }
+    .chat-footer {
+        border-top: 1px solid var(--pico-muted-border-color);
+        padding: 0.75rem 1rem;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+    <a href="/goals/{{ goal.id }}/inbox" style="font-size: 0.85rem;">&larr; Back to Inbox</a>
+</nav>
+
+<div class="chat-layout">
+    {# Sidebar: thread list #}
+    <div class="chat-sidebar">
+        {% for thread in threads %}
+        <a href="/goals/{{ goal.id }}/inbox/{{ thread.message.id }}"
+           class="{{ 'active-thread' if thread.message.id == active_message_id }}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
+                <strong style="font-size: 0.85rem;">{{ thread.message.profile.name }}</strong>
+                <span class="badge badge-{{ thread.sentiment }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">{{ thread.sentiment | capitalize }}</span>
+            </div>
+            <p style="margin: 0; font-size: 0.75rem; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ thread.last_preview }}
+            </p>
+        </a>
+        {% endfor %}
+    </div>
+
+    {# Chat panel #}
+    <div class="chat-panel">
+        {% if active_thread %}
+        <div class="chat-header">
+            <div>
+                <strong>{{ active_thread.message.profile.name }}</strong>
+                <span style="font-size: 0.8rem; opacity: 0.6;"> — {{ active_thread.message.profile.role }} at {{ active_thread.message.profile.company }}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                {% if active_thread.is_concluded %}
+                <span class="badge" style="background: #e2e3e5; color: #383d41;">Concluded</span>
+                {% endif %}
+                <span class="badge badge-{{ active_thread.sentiment }}">{{ active_thread.sentiment | capitalize }}</span>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            {# Original outreach #}
+            <div class="bubble-you chat-bubble">
+                <div class="bubble-label">You (initial outreach)</div>
+                {{ active_thread.message.body }}
+            </div>
+
+            {# Thread replies #}
+            {% for reply in active_thread.replies %}
+            <div class="chat-bubble {{ 'bubble-them' if reply.direction == 'inbound' else 'bubble-you' }}">
+                <div class="bubble-label">
+                    {{ active_thread.message.profile.name if reply.direction == 'inbound' else 'You' }}
+                    {% if reply.is_conclusion %} · Final reply{% endif %}
+                </div>
+                {{ reply.body }}
+            </div>
+            {% endfor %}
+        </div>
+
+        {# Footer: AI suggestion or status #}
+        <div class="chat-footer" id="chat-footer">
+            {% if active_thread.latest_inbound and active_thread.latest_inbound.follow_up_suggestion and active_thread.latest_inbound.follow_up_status == 'pending' %}
+            <p style="font-size: 0.75rem; margin-bottom: 0.4rem; opacity: 0.6;"><strong>AI suggested response:</strong></p>
+            <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/follow-up">
+                <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
+                <textarea name="body" rows="3" style="margin-bottom: 0.5rem; font-size: 0.85rem;">{{ active_thread.latest_inbound.follow_up_suggestion }}</textarea>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit">Send</button>
+                    <button type="submit" class="outline secondary"
+                        formaction="/api/replies/{{ active_thread.latest_inbound.id }}/skip-followup">Skip</button>
+                </div>
+            </form>
+            {% elif active_thread.is_concluded %}
+                {% if active_thread.sentiment == 'positive' %}
+                <small style="color: #155724;">Conversation concluded positively</small>
+                {% elif active_thread.sentiment == 'negative' %}
+                <small style="color: #721c24;">Conversation concluded — declined</small>
+                {% else %}
+                <small style="color: #856404;">Conversation concluded</small>
+                {% endif %}
+            {% elif active_thread.latest_inbound and active_thread.latest_inbound.follow_up_status == 'sent' %}
+                <small style="opacity: 0.6;">Waiting for reply...</small>
+            {% endif %}
+        </div>
+
+        <script>
+            // Auto-scroll chat to bottom
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+        </script>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
