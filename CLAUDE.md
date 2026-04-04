@@ -315,6 +315,14 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 
 - [ ] 6.5 Verify: sent messages → replies appear → correctly classified → follow-ups suggested
 
+- [ ] 6.6 Conversation UX improvements
+  - [ ] 6.6.1 Don't auto-send follow-up — clicking "Send Response" should show editable textarea first, then confirm to send
+  - [ ] 6.6.2 Inbox overview as contact list — show each thread as a row with name, sentiment badge, last message preview, and reply count
+  - [ ] 6.6.3 Clicking a thread opens a dedicated chat page (WhatsApp-style) at /goals/{id}/inbox/{message_id}
+  - [ ] 6.6.4 Chat page — full message history with chat bubbles (left = them, right = you), AI suggestion at bottom with edit + send
+  - [ ] 6.6.5 After sending, stay on chat page and show new reply inline (HTMX swap)
+  - [ ] 6.6.6 Back button on chat page returns to inbox overview
+
 ---
 
 ### Phase 7: Dashboard + Polish [~1 hr]
