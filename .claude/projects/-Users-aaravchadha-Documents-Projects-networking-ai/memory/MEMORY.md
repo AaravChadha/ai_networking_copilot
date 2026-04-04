@@ -1,1 +1,3 @@
 - [Workflow preferences](feedback_workflow.md) — task-driven, grouped subtasks, auto-checkoff, commit without coauthor
+- [User profile](user_profile.md) — solo hacker at Purdue hackathon, comfortable with Python, prefers incremental work
+- [Project decisions](project_decisions.md) — repo name, skip Phase 5, defer polish to Phase 7, profiles generated locally
