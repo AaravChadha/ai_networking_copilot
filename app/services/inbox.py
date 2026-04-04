@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
-from app.models import Message, Profile, Reply
+from app.models import Goal, Message, Profile, Reply
 from app.services.groq_client import chat, chat_json
 
 
@@ -94,6 +94,46 @@ Classify this reply."""
     signals = result.get("signals", [])
 
     return {"sentiment": sentiment, "signals": signals}
+
+
+def suggest_follow_up(
+    reply_body: str,
+    original_message: str,
+    sentiment: str,
+    profile: Profile,
+    goal: Goal,
+) -> str:
+    """Generate a context-aware follow-up suggestion based on the reply sentiment via Groq."""
+    sentiment_guidance = {
+        "positive": "They're interested! Suggest a concrete next step — propose a specific meeting time, offer to share relevant work, or ask a focused follow-up question. Be enthusiastic but not pushy.",
+        "neutral": "They're on the fence. Provide additional context that might tip them toward interest — mention a specific shared connection, relevant achievement, or lower the ask. Keep it light.",
+        "negative": "They declined. Write a graceful, brief close — thank them for their time, ask if there's someone else they'd recommend, or leave the door open for the future. Do NOT be pushy.",
+    }
+
+    system_prompt = f"""You are a networking coach. Based on a reply to an outreach message, write a follow-up message suggestion.
+
+RULES:
+- Write as the original sender in first person
+- Keep it under 80 words
+- {sentiment_guidance.get(sentiment, sentiment_guidance["neutral"])}
+- Sound natural and human
+- Do NOT include a subject line
+- Just write the follow-up body"""
+
+    user_prompt = f"""SENDER'S GOAL: {goal.goal_type} — {goal.description}
+SENDER'S BACKGROUND: {goal.user_background}
+
+RECIPIENT: {profile.name}, {profile.role} at {profile.company}
+
+ORIGINAL OUTREACH:
+{original_message}
+
+THEIR REPLY ({sentiment}):
+{reply_body}
+
+Write the follow-up message."""
+
+    return chat(system_prompt, user_prompt, temperature=0.7).strip()
 
 
 def generate_replies_for_sent(messages: list[Message], db: Session) -> list[Reply]:
