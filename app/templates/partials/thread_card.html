@@ -48,17 +48,19 @@
             <p style="white-space: pre-wrap; font-size: 0.9rem; opacity: 0.85;">{{ thread.latest_inbound.follow_up_suggestion }}</p>
         </div>
 
-        <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-            <button class="outline" hx-post="/api/replies/{{ thread.latest_inbound.id }}/follow-up" hx-target="#thread-{{ thread.message.id }}" hx-swap="outerHTML">
-                Send Response
-            </button>
-            <button class="outline secondary" hx-get="/api/replies/{{ thread.latest_inbound.id }}/edit-followup" hx-target="#followup-body-{{ thread.latest_inbound.id }}" hx-swap="innerHTML">
-                Edit
-            </button>
-            <button class="outline secondary" hx-post="/api/replies/{{ thread.latest_inbound.id }}/skip-followup" hx-target="#thread-{{ thread.message.id }}" hx-swap="outerHTML">
-                Skip
-            </button>
-        </footer>
+        <div id="followup-actions-{{ thread.latest_inbound.id }}">
+            <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <button class="outline"
+                    hx-get="/api/replies/{{ thread.latest_inbound.id }}/compose"
+                    hx-target="#followup-actions-{{ thread.latest_inbound.id }}"
+                    hx-swap="innerHTML">
+                    Send Response
+                </button>
+                <button class="outline secondary" hx-post="/api/replies/{{ thread.latest_inbound.id }}/skip-followup" hx-target="#thread-{{ thread.message.id }}" hx-swap="outerHTML">
+                    Skip
+                </button>
+            </footer>
+        </div>
     </div>
     {% elif thread.is_concluded %}
     <footer>

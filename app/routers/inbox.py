@@ -22,6 +22,50 @@ async def get_inbox(request: Request, goal_id: int, db: Session = Depends(get_db
     return replies
 
 
+@router.get("/replies/{reply_id}/compose")
+async def compose_follow_up(request: Request, reply_id: int, db: Session = Depends(get_db)):
+    """Show editable textarea pre-filled with the AI suggestion, with confirm/cancel."""
+    reply = db.query(Reply).filter(Reply.id == reply_id).first()
+    html = f"""
+    <form hx-post="/api/replies/{reply.id}/follow-up" hx-target="#thread-{reply.message_id}" hx-swap="outerHTML">
+        <textarea name="body" rows="4" style="margin-bottom: 0.5rem;">{reply.follow_up_suggestion}</textarea>
+        <div style="display: flex; gap: 0.5rem;">
+            <button type="submit">Confirm Send</button>
+            <button type="button" class="outline secondary"
+                hx-get="/api/replies/{reply.id}/cancel-compose"
+                hx-target="closest div"
+                hx-swap="outerHTML">Cancel</button>
+        </div>
+    </form>
+    """
+    return HTMLResponse(html)
+
+
+@router.get("/replies/{reply_id}/cancel-compose")
+async def cancel_compose(request: Request, reply_id: int, db: Session = Depends(get_db)):
+    """Restore the original Send Response / Skip buttons."""
+    reply = db.query(Reply).filter(Reply.id == reply_id).first()
+    html = f"""
+    <div id="followup-actions-{reply.id}">
+        <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button class="outline"
+                hx-get="/api/replies/{reply.id}/compose"
+                hx-target="#followup-actions-{reply.id}"
+                hx-swap="innerHTML">
+                Send Response
+            </button>
+            <button class="outline secondary"
+                hx-post="/api/replies/{reply.id}/skip-followup"
+                hx-target="#thread-{reply.message_id}"
+                hx-swap="outerHTML">
+                Skip
+            </button>
+        </footer>
+    </div>
+    """
+    return HTMLResponse(html)
+
+
 @router.post("/replies/{reply_id}/follow-up")
 async def send_follow_up(request: Request, reply_id: int, db: Session = Depends(get_db)):
     """Send a follow-up and continue the conversation."""
@@ -31,8 +75,9 @@ async def send_follow_up(request: Request, reply_id: int, db: Session = Depends(
             "thread": _get_thread(reply.message_id, db),
         })
 
-    # Use the follow-up suggestion as the body (may have been edited)
-    follow_up_body = reply.follow_up_suggestion
+    # Use the edited body from the compose form, or fall back to suggestion
+    form = await request.form()
+    follow_up_body = form.get("body", reply.follow_up_suggestion)
 
     # Continue the conversation — saves outbound, generates new inbound reply
     continue_conversation(reply.id, follow_up_body, db)
@@ -52,40 +97,6 @@ async def skip_follow_up(request: Request, reply_id: int, db: Session = Depends(
     return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 
 
-@router.get("/replies/{reply_id}/edit-followup")
-async def edit_followup_form(request: Request, reply_id: int, db: Session = Depends(get_db)):
-    reply = db.query(Reply).filter(Reply.id == reply_id).first()
-    html = f"""
-    <form hx-patch="/api/replies/{reply.id}/followup" hx-target="#thread-{reply.message_id}" hx-swap="outerHTML">
-        <textarea name="follow_up_suggestion" rows="4">{reply.follow_up_suggestion}</textarea>
-        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-            <button type="submit">Save</button>
-            <button type="button" class="outline secondary"
-                hx-get="/api/replies/{reply.id}/cancel-edit-followup"
-                hx-target="#followup-body-{reply.id}" hx-swap="innerHTML">Cancel</button>
-        </div>
-    </form>
-    """
-    return HTMLResponse(html)
-
-
-@router.get("/replies/{reply_id}/cancel-edit-followup")
-async def cancel_edit_followup(request: Request, reply_id: int, db: Session = Depends(get_db)):
-    reply = db.query(Reply).filter(Reply.id == reply_id).first()
-    html = f'<p style="white-space: pre-wrap; font-size: 0.9rem; opacity: 0.85;">{reply.follow_up_suggestion}</p>'
-    return HTMLResponse(html)
-
-
-@router.patch("/replies/{reply_id}/followup")
-async def update_followup(request: Request, reply_id: int, db: Session = Depends(get_db)):
-    reply = db.query(Reply).filter(Reply.id == reply_id).first()
-    form = await request.form()
-    if "follow_up_suggestion" in form:
-        reply.follow_up_suggestion = form["follow_up_suggestion"]
-    db.commit()
-    db.refresh(reply)
-    thread = _get_thread(reply.message_id, db)
-    return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 
 
 def _get_thread(message_id: int, db: Session) -> dict:

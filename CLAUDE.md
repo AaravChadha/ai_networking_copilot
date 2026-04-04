@@ -314,7 +314,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.4.4 app/routers/pages.py — GET /goals/{id}/inbox
 
 - [ ] 6.6 Conversation UX improvements
-  - [ ] 6.6.1 Don't auto-send follow-up — clicking "Send Response" should show editable textarea first, then confirm to send
+  - [x] 6.6.1 Don't auto-send follow-up — clicking "Send Response" should show editable textarea first, then confirm to send
   - [ ] 6.6.2 Inbox overview as contact list — show each thread as a row with name, sentiment badge, last message preview, and reply count
   - [ ] 6.6.3 Chat page at /goals/{id}/inbox/{message_id} — split layout: thread list sidebar on left, chat on right
   - [ ] 6.6.4 Sidebar — list of all threads for this goal with name, sentiment badge, last message preview; clicking switches chat panel
