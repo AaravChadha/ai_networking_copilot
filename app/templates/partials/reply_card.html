@@ -1,0 +1,43 @@
+<article id="reply-{{ reply.id }}" style="margin-bottom: 1rem;">
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong>{{ reply.message.profile.name }}</strong> — {{ reply.message.profile.role }} at {{ reply.message.profile.company }}
+        </div>
+        <span class="badge badge-{{ reply.sentiment }}">{{ reply.sentiment | capitalize }}</span>
+    </header>
+
+    <details style="margin-bottom: 0.5rem;">
+        <summary>Your original message</summary>
+        <p style="white-space: pre-wrap; opacity: 0.7; font-size: 0.9rem;">{{ reply.message.body }}</p>
+    </details>
+
+    <p style="white-space: pre-wrap;">{{ reply.body }}</p>
+
+    {% if reply.follow_up_suggestion %}
+    <hr>
+    <div id="followup-{{ reply.id }}">
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>Suggested follow-up:</strong></p>
+        <div id="followup-body-{{ reply.id }}">
+            <p style="white-space: pre-wrap; font-size: 0.9rem; opacity: 0.85;">{{ reply.follow_up_suggestion }}</p>
+        </div>
+
+        {% if reply.follow_up_status == 'pending' %}
+        <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button class="outline" hx-post="/api/replies/{{ reply.id }}/follow-up" hx-target="#reply-{{ reply.id }}" hx-swap="outerHTML">
+                Send Follow-up
+            </button>
+            <button class="outline secondary" hx-get="/api/replies/{{ reply.id }}/edit-followup" hx-target="#followup-body-{{ reply.id }}" hx-swap="innerHTML">
+                Edit
+            </button>
+            <button class="outline secondary" hx-post="/api/replies/{{ reply.id }}/skip-followup" hx-target="#reply-{{ reply.id }}" hx-swap="outerHTML">
+                Skip
+            </button>
+        </footer>
+        {% elif reply.follow_up_status == 'sent' %}
+        <small style="color: #155724;">Follow-up sent</small>
+        {% elif reply.follow_up_status == 'skipped' %}
+        <small style="color: #856404;">Follow-up skipped</small>
+        {% endif %}
+    </div>
+    {% endif %}
+</article>

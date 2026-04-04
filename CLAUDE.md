@@ -309,7 +309,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 
 - [ ] 6.4 Inbox page
   - [x] 6.4.1 app/templates/inbox.html — replies grouped by sentiment (color-coded)
-  - [ ] 6.4.2 app/templates/partials/reply_card.html — reply with sentiment badge, follow-up suggestion
+  - [x] 6.4.2 app/templates/partials/reply_card.html — reply with sentiment badge, follow-up suggestion
   - [ ] 6.4.3 app/routers/inbox.py — GET /api/goals/{id}/inbox, POST /api/replies/{id}/follow-up
   - [ ] 6.4.4 app/routers/pages.py — GET /goals/{id}/inbox
 
