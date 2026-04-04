@@ -330,7 +330,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.7.4 Templates page — show which template was last used for this campaign
   - [x] 6.7.5 Allow re-running generate for newly selected contacts without duplicating existing messages
 
-- [ ] 6.8 Verify: full end-to-end flow — send messages → replies appear → chat works → navigation between pages
+- [x] 6.8 Verify: full end-to-end flow — send messages → replies appear → chat works → navigation between pages
 
 ---
 
