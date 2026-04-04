@@ -326,7 +326,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 - [ ] 6.7 Campaign navigation flow
   - [x] 6.7.1 Clicking a campaign on dashboard goes to outreach page (messages sent view)
   - [x] 6.7.2 Add breadcrumb/back navigation on outreach page: Contacts ← Templates ← Outreach → Inbox
-  - [ ] 6.7.3 Contacts page — pre-check contacts that already have messages (sent/draft/approved/replied)
+  - [x] 6.7.3 Contacts page — pre-check contacts that already have messages (sent/draft/approved/replied)
   - [ ] 6.7.4 Templates page — show which template was last used for this campaign
   - [ ] 6.7.5 Allow re-running generate for newly selected contacts without duplicating existing messages
 

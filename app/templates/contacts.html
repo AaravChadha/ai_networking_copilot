@@ -24,7 +24,7 @@
         <tbody>
             {% for c in contacts %}
             <tr>
-                <td><input type="checkbox" name="profile_ids" value="{{ c.profile.id }}"></td>
+                <td><input type="checkbox" name="profile_ids" value="{{ c.profile.id }}" {{ 'checked' if c.profile.id in existing_profile_ids }}></td>
                 <td><strong>{{ c.score }}</strong></td>
                 <td>{{ c.profile.name }}</td>
                 <td>{{ c.profile.role }}</td>

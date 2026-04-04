@@ -61,9 +61,15 @@ async def create_goal_form(
 async def contacts_page(request: Request, goal_id: int, db: Session = Depends(get_db)):
     goal = db.query(Goal).filter(Goal.id == goal_id).first()
     contacts = get_ranked_contacts(goal, db)
+    # Profile IDs that already have messages for this goal
+    existing_ids = {
+        m.profile_id
+        for m in db.query(Message).filter(Message.goal_id == goal_id).all()
+    }
     return templates.TemplateResponse(request, "contacts.html", {
         "goal": goal,
         "contacts": contacts,
+        "existing_profile_ids": existing_ids,
     })
 
 
