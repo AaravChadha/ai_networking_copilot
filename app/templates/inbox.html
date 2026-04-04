@@ -5,58 +5,62 @@
 {% block content %}
 <hgroup>
     <h1>Inbox</h1>
+    {% if goal %}
     <p>{{ goal.description }}</p>
+    {% else %}
+    <p>All replies across campaigns</p>
+    {% endif %}
 </hgroup>
 
+{% if goal %}
 <nav style="margin-bottom: 1.5rem;">
     <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline secondary">Back to Outreach</a>
 </nav>
+{% endif %}
 
-{% if replies %}
+{% if threads %}
 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
-    <span>{{ replies | length }} replies</span>
+    <span>{{ threads | length }} conversations</span>
     <span>·</span>
-    <span class="badge badge-positive">{{ replies | selectattr('sentiment', 'equalto', 'positive') | list | length }} positive</span>
-    <span class="badge badge-neutral">{{ replies | selectattr('sentiment', 'equalto', 'neutral') | list | length }} neutral</span>
-    <span class="badge badge-negative">{{ replies | selectattr('sentiment', 'equalto', 'negative') | list | length }} negative</span>
+    <span class="badge badge-positive">{{ threads | selectattr('sentiment', 'equalto', 'positive') | list | length }} positive</span>
+    <span class="badge badge-neutral">{{ threads | selectattr('sentiment', 'equalto', 'neutral') | list | length }} neutral</span>
+    <span class="badge badge-negative">{{ threads | selectattr('sentiment', 'equalto', 'negative') | list | length }} negative</span>
 </div>
 
-{% set positive_replies = replies | selectattr('sentiment', 'equalto', 'positive') | list %}
-{% set neutral_replies = replies | selectattr('sentiment', 'equalto', 'neutral') | list %}
-{% set negative_replies = replies | selectattr('sentiment', 'equalto', 'negative') | list %}
+{% set positive_threads = threads | selectattr('sentiment', 'equalto', 'positive') | list %}
+{% set neutral_threads = threads | selectattr('sentiment', 'equalto', 'neutral') | list %}
+{% set negative_threads = threads | selectattr('sentiment', 'equalto', 'negative') | list %}
 
-{% if positive_replies %}
-<h3 style="color: #155724;">Positive Replies</h3>
-<div id="positive-list">
-    {% for reply in positive_replies %}
-    {% include "partials/reply_card.html" %}
-    {% endfor %}
-</div>
+{% if positive_threads %}
+<h3 style="color: #155724;">Positive</h3>
+{% for thread in positive_threads %}
+{% include "partials/thread_card.html" %}
+{% endfor %}
 {% endif %}
 
-{% if neutral_replies %}
-<h3 style="color: #856404;">Neutral Replies</h3>
-<div id="neutral-list">
-    {% for reply in neutral_replies %}
-    {% include "partials/reply_card.html" %}
-    {% endfor %}
-</div>
+{% if neutral_threads %}
+<h3 style="color: #856404;">Neutral</h3>
+{% for thread in neutral_threads %}
+{% include "partials/thread_card.html" %}
+{% endfor %}
 {% endif %}
 
-{% if negative_replies %}
-<h3 style="color: #721c24;">Negative Replies</h3>
-<div id="negative-list">
-    {% for reply in negative_replies %}
-    {% include "partials/reply_card.html" %}
-    {% endfor %}
-</div>
+{% if negative_threads %}
+<h3 style="color: #721c24;">Negative</h3>
+{% for thread in negative_threads %}
+{% include "partials/thread_card.html" %}
+{% endfor %}
 {% endif %}
 
 {% else %}
 <article style="text-align: center; padding: 2rem;">
     <h2>No replies yet</h2>
     <p>Send some messages first — replies will appear here after sending.</p>
+    {% if goal %}
     <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline">Go to Outreach</a>
+    {% else %}
+    <a href="/" role="button" class="outline">Go to Dashboard</a>
+    {% endif %}
 </article>
 {% endif %}
 {% endblock %}

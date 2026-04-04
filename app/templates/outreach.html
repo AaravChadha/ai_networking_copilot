@@ -26,6 +26,7 @@
     <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline">
         Send All Approved
     </button>
+    <a href="/goals/{{ goal.id }}/inbox" role="button" class="outline secondary">View Inbox</a>
 </div>
 
 <script>

@@ -1,0 +1,78 @@
+<article id="thread-{{ thread.message.id }}" style="margin-bottom: 1.5rem;">
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong>{{ thread.message.profile.name }}</strong> — {{ thread.message.profile.role }} at {{ thread.message.profile.company }}
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            {% if thread.is_concluded %}
+            <span class="badge" style="background: #e2e3e5; color: #383d41;">Concluded</span>
+            {% endif %}
+            <span class="badge badge-{{ thread.sentiment }}">{{ thread.sentiment | capitalize }}</span>
+        </div>
+    </header>
+
+    {# Conversation thread #}
+    <div style="margin: 1rem 0;">
+        {# Original outreach - collapsible #}
+        <details style="margin-bottom: 0.75rem;">
+            <summary style="font-size: 0.85rem; opacity: 0.7;">Your original message</summary>
+            <div style="padding: 0.75rem; border-left: 3px solid #546e7a; margin-top: 0.5rem;">
+                <p style="white-space: pre-wrap; font-size: 0.85rem; margin: 0;">{{ thread.message.body }}</p>
+            </div>
+        </details>
+
+        {# Thread messages #}
+        {% for reply in thread.replies %}
+        <div style="padding: 0.75rem; border-left: 3px solid {{ '#4caf50' if reply.direction == 'inbound' else '#2196f3' }}; margin-bottom: 0.75rem; {% if reply.direction == 'outbound' %}margin-left: 1.5rem;{% endif %}">
+            <div style="font-size: 0.75rem; opacity: 0.6; margin-bottom: 0.25rem;">
+                {% if reply.direction == 'inbound' %}
+                    {{ thread.message.profile.name }}
+                    {% if reply.is_conclusion %} · Final reply{% endif %}
+                {% else %}
+                    You
+                {% endif %}
+            </div>
+            <p style="white-space: pre-wrap; margin: 0; font-size: 0.9rem;">{{ reply.body }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Follow-up actions — only show for the latest inbound reply that's pending #}
+    {% if thread.latest_inbound and thread.latest_inbound.follow_up_suggestion and thread.latest_inbound.follow_up_status == 'pending' %}
+    <hr>
+    <div>
+        <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">
+            <strong>Suggested response:</strong>
+        </p>
+        <div id="followup-body-{{ thread.latest_inbound.id }}">
+            <p style="white-space: pre-wrap; font-size: 0.9rem; opacity: 0.85;">{{ thread.latest_inbound.follow_up_suggestion }}</p>
+        </div>
+
+        <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button class="outline" hx-post="/api/replies/{{ thread.latest_inbound.id }}/follow-up" hx-target="#thread-{{ thread.message.id }}" hx-swap="outerHTML">
+                Send Response
+            </button>
+            <button class="outline secondary" hx-get="/api/replies/{{ thread.latest_inbound.id }}/edit-followup" hx-target="#followup-body-{{ thread.latest_inbound.id }}" hx-swap="innerHTML">
+                Edit
+            </button>
+            <button class="outline secondary" hx-post="/api/replies/{{ thread.latest_inbound.id }}/skip-followup" hx-target="#thread-{{ thread.message.id }}" hx-swap="outerHTML">
+                Skip
+            </button>
+        </footer>
+    </div>
+    {% elif thread.is_concluded %}
+    <footer>
+        {% if thread.sentiment == 'positive' %}
+        <small style="color: #155724;">Conversation concluded positively</small>
+        {% elif thread.sentiment == 'negative' %}
+        <small style="color: #721c24;">Conversation concluded — declined</small>
+        {% else %}
+        <small style="color: #856404;">Conversation concluded</small>
+        {% endif %}
+    </footer>
+    {% elif thread.latest_inbound and thread.latest_inbound.follow_up_status == 'sent' and not thread.is_concluded %}
+    <footer>
+        <small style="opacity: 0.6;">Waiting for reply...</small>
+    </footer>
+    {% endif %}
+</article>

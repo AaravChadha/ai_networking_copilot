@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Goal, Message, Reply
-from app.services.inbox import suggest_follow_up
+from app.services.inbox import continue_conversation
 from app.templating import templates
 
 router = APIRouter(prefix="/api", tags=["inbox"])
@@ -24,12 +24,21 @@ async def get_inbox(request: Request, goal_id: int, db: Session = Depends(get_db
 
 @router.post("/replies/{reply_id}/follow-up")
 async def send_follow_up(request: Request, reply_id: int, db: Session = Depends(get_db)):
+    """Send a follow-up and continue the conversation."""
     reply = db.query(Reply).filter(Reply.id == reply_id).first()
-    if reply and reply.follow_up_status == "pending":
-        reply.follow_up_status = "sent"
-        db.commit()
-        db.refresh(reply)
-    return templates.TemplateResponse(request, "partials/reply_card.html", {"reply": reply})
+    if not reply or reply.follow_up_status != "pending":
+        return templates.TemplateResponse(request, "partials/thread_card.html", {
+            "thread": _get_thread(reply.message_id, db),
+        })
+
+    # Use the follow-up suggestion as the body (may have been edited)
+    follow_up_body = reply.follow_up_suggestion
+
+    # Continue the conversation — saves outbound, generates new inbound reply
+    continue_conversation(reply.id, follow_up_body, db)
+
+    thread = _get_thread(reply.message_id, db)
+    return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 
 
 @router.post("/replies/{reply_id}/skip-followup")
@@ -39,14 +48,15 @@ async def skip_follow_up(request: Request, reply_id: int, db: Session = Depends(
         reply.follow_up_status = "skipped"
         db.commit()
         db.refresh(reply)
-    return templates.TemplateResponse(request, "partials/reply_card.html", {"reply": reply})
+    thread = _get_thread(reply.message_id, db)
+    return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
 
 
 @router.get("/replies/{reply_id}/edit-followup")
 async def edit_followup_form(request: Request, reply_id: int, db: Session = Depends(get_db)):
     reply = db.query(Reply).filter(Reply.id == reply_id).first()
     html = f"""
-    <form hx-patch="/api/replies/{reply.id}/followup" hx-target="#reply-{reply.id}" hx-swap="outerHTML">
+    <form hx-patch="/api/replies/{reply.id}/followup" hx-target="#thread-{reply.message_id}" hx-swap="outerHTML">
         <textarea name="follow_up_suggestion" rows="4">{reply.follow_up_suggestion}</textarea>
         <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
             <button type="submit">Save</button>
@@ -74,4 +84,26 @@ async def update_followup(request: Request, reply_id: int, db: Session = Depends
         reply.follow_up_suggestion = form["follow_up_suggestion"]
     db.commit()
     db.refresh(reply)
-    return templates.TemplateResponse(request, "partials/reply_card.html", {"reply": reply})
+    thread = _get_thread(reply.message_id, db)
+    return templates.TemplateResponse(request, "partials/thread_card.html", {"thread": thread})
+
+
+def _get_thread(message_id: int, db: Session) -> dict:
+    """Build a thread dict for template rendering."""
+    message = db.query(Message).filter(Message.id == message_id).first()
+    replies = (
+        db.query(Reply)
+        .filter(Reply.message_id == message_id)
+        .order_by(Reply.round_number)
+        .all()
+    )
+    # Latest inbound reply determines the thread sentiment
+    inbound = [r for r in replies if r.direction == "inbound"]
+    latest_inbound = inbound[-1] if inbound else None
+    return {
+        "message": message,
+        "replies": replies,
+        "latest_inbound": latest_inbound,
+        "sentiment": latest_inbound.sentiment if latest_inbound else "neutral",
+        "is_concluded": latest_inbound.is_conclusion if latest_inbound else False,
+    }

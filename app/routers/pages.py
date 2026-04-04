@@ -125,16 +125,51 @@ async def outreach_page(request: Request, goal_id: int, db: Session = Depends(ge
     })
 
 
+@router.get("/inbox")
+async def inbox_all(request: Request, db: Session = Depends(get_db)):
+    threads = _build_threads(db)
+    return templates.TemplateResponse(request, "inbox.html", {
+        "goal": None,
+        "threads": threads,
+        "active_page": "inbox",
+    })
+
+
 @router.get("/goals/{goal_id}/inbox")
 async def inbox_page(request: Request, goal_id: int, db: Session = Depends(get_db)):
     goal = db.query(Goal).filter(Goal.id == goal_id).first()
-    replies = (
-        db.query(Reply)
-        .join(Message, Reply.message_id == Message.id)
-        .filter(Message.goal_id == goal_id)
-        .all()
-    )
+    threads = _build_threads(db, goal_id)
     return templates.TemplateResponse(request, "inbox.html", {
         "goal": goal,
-        "replies": replies,
+        "threads": threads,
     })
+
+
+def _build_threads(db: Session, goal_id: int = None) -> list[dict]:
+    """Group replies into conversation threads by message."""
+    query = db.query(Reply).join(Message, Reply.message_id == Message.id)
+    if goal_id:
+        query = query.filter(Message.goal_id == goal_id)
+    all_replies = query.order_by(Reply.round_number).all()
+
+    # Group by message_id
+    threads_map = {}
+    for reply in all_replies:
+        if reply.message_id not in threads_map:
+            threads_map[reply.message_id] = []
+        threads_map[reply.message_id].append(reply)
+
+    threads = []
+    for message_id, replies in threads_map.items():
+        message = db.query(Message).filter(Message.id == message_id).first()
+        inbound = [r for r in replies if r.direction == "inbound"]
+        latest_inbound = inbound[-1] if inbound else None
+        threads.append({
+            "message": message,
+            "replies": replies,
+            "latest_inbound": latest_inbound,
+            "sentiment": latest_inbound.sentiment if latest_inbound else "neutral",
+            "is_concluded": latest_inbound.is_conclusion if latest_inbound else False,
+        })
+
+    return threads

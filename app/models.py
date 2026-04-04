@@ -92,6 +92,9 @@ class Reply(Base):
     message_id = Column(Integer, ForeignKey("messages.id"), nullable=False)
     body = Column(Text, default="")
     sentiment = Column(String, default="neutral")  # positive/neutral/negative
+    direction = Column(String, default="inbound")  # inbound (their reply) / outbound (your follow-up)
+    round_number = Column(Integer, default=1)  # conversation round
+    is_conclusion = Column(Boolean, default=False)  # true if this ends the conversation
     reply_at = Column(DateTime, default=datetime.utcnow)
     follow_up_suggestion = Column(Text, default="")
     follow_up_status = Column(String, default="pending")  # pending/sent/skipped
