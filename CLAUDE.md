@@ -353,10 +353,10 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 7.3.4 Nav bar highlighting active page
   - [x] 7.3.5 Responsive layout check
 
-- [ ] 7.4 Demo readiness
-  - [ ] 7.4.1 Seed DB with sample goal + messages + replies as fallback demo data
-  - [ ] 7.4.2 Verify full end-to-end flow works smoothly
-  - [ ] 7.4.3 Test with fresh DB (delete .db file, restart)
+- [x] 7.4 Demo readiness
+  - [x] 7.4.1 Seed DB with sample goal + messages + replies as fallback demo data
+  - [x] 7.4.2 Verify full end-to-end flow works smoothly
+  - [x] 7.4.3 Test with fresh DB (delete .db file, restart)
 
 ---
 
