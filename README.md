@@ -4,10 +4,6 @@ An AI-powered networking copilot that automates the entire professional outreach
 
 Built solo at **Catapult Hacks** (Purdue University) in 36 hours. Budget: **$0** — everything runs on free tiers.
 
-## Screenshots
-
-<!-- Add screenshots here -->
-
 ## What It Does
 
 1. **Define your goal** — Tell the AI what you're looking for (internship, mentorship, research collab, etc.) and your background
