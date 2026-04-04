@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Goal, SendConfig
+from fastapi.responses import HTMLResponse
+
+from app.models import CachedRanking, Goal, Message, Reply, SendConfig
 from app.schemas import GoalCreate, GoalResponse
 
 router = APIRouter(prefix="/api/goals", tags=["goals"])
@@ -40,6 +42,24 @@ async def list_goals(db: Session = Depends(get_db)):
 async def get_goal(goal_id: int, db: Session = Depends(get_db)):
     goal = db.query(Goal).filter(Goal.id == goal_id).first()
     return _goal_to_response(goal)
+
+
+@router.delete("/{goal_id}")
+async def delete_goal(goal_id: int, db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    if not goal:
+        return HTMLResponse("")
+
+    # Delete related data
+    db.query(CachedRanking).filter(CachedRanking.goal_id == goal_id).delete()
+    for msg in db.query(Message).filter(Message.goal_id == goal_id).all():
+        db.query(Reply).filter(Reply.message_id == msg.id).delete()
+    db.query(Message).filter(Message.goal_id == goal_id).delete()
+    db.query(SendConfig).filter(SendConfig.goal_id == goal_id).delete()
+    db.delete(goal)
+    db.commit()
+
+    return HTMLResponse("")
 
 
 def _goal_to_response(goal: Goal) -> GoalResponse:
