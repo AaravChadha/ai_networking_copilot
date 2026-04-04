@@ -234,14 +234,14 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 4: Template System + Message Generation [~1.5 hrs]
 **Goal**: User picks a template, AI generates personalized drafts for selected contacts
 
-- [ ] 4.1 Template system
-  - [ ] 4.1.1 app/services/templates.py — seed 5 default templates on startup
+- [x] 4.1 Template system
+  - [x] 4.1.1 app/services/templates.py — seed 5 default templates on startup
     - Informational Interview
     - Internship/Job Inquiry
     - Research Collaboration
     - Investor Outreach
     - Custom
-  - [ ] 4.1.2 Each template has: intro, context, ask, closing sections with {variables}
+  - [x] 4.1.2 Each template has: intro, context, ask, closing sections with {variables}
 
 - [ ] 4.2 Template editor page
   - [ ] 4.2.1 app/templates/template_editor.html — template type selector, tone dropdown, section previews, "Generate Messages" button

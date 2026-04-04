@@ -12,6 +12,7 @@ from app.models import Profile
 async def lifespan(app: FastAPI):
     create_tables()
     seed_profiles()
+    seed_templates()
     yield
 
 
@@ -35,6 +36,15 @@ def seed_profiles():
                         linkedin_url=p.get("linkedin_url", ""),
                     ))
                 db.commit()
+    finally:
+        db.close()
+
+
+def seed_templates():
+    from app.services.templates import seed_default_templates
+    db = SessionLocal()
+    try:
+        seed_default_templates(db)
     finally:
         db.close()
 
