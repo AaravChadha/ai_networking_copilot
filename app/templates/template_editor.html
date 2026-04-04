@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Template - AI Networking Copilot{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Choose Outreach Template</h1>
+    <p>{{ goal.description }}</p>
+</hgroup>
+
+<p><strong>{{ profile_ids | length }}</strong> contacts selected</p>
+
+<article style="text-align: center; padding: 2rem;">
+    <h2>Coming soon</h2>
+    <p>Template editor will be built in Phase 4.</p>
+    <a href="/goals/{{ goal.id }}/contacts" role="button" class="outline">Back to Contacts</a>
+</article>
+{% endblock %}

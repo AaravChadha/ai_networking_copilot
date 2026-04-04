@@ -29,6 +29,6 @@
     <label for="target_companies">Target companies (comma-separated)</label>
     <input type="text" id="target_companies" name="target_companies" placeholder="e.g., Google, Meta, OpenAI, Anthropic">
 
-    <button type="submit">Create Campaign</button>
+    <button type="submit" id="submit-btn" onclick="this.setAttribute('aria-busy', 'true'); this.textContent='Finding matches...';">Create Campaign</button>
 </form>
 {% endblock %}

@@ -63,3 +63,25 @@ async def contacts_page(request: Request, goal_id: int, db: Session = Depends(ge
         "goal": goal,
         "contacts": contacts,
     })
+
+
+@router.post("/goals/{goal_id}/templates")
+async def templates_page_post(
+    request: Request,
+    goal_id: int,
+    profile_ids: list[int] = Form([]),
+    db: Session = Depends(get_db),
+):
+    # Store selected profile IDs in session via query params for now
+    ids = ",".join(str(i) for i in profile_ids)
+    return RedirectResponse(url=f"/goals/{goal_id}/templates?profiles={ids}", status_code=303)
+
+
+@router.get("/goals/{goal_id}/templates")
+async def templates_page_get(request: Request, goal_id: int, profiles: str = "", db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    profile_ids = [int(x) for x in profiles.split(",") if x.strip()]
+    return templates.TemplateResponse(request, "template_editor.html", {
+        "goal": goal,
+        "profile_ids": profile_ids,
+    })
