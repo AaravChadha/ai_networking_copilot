@@ -208,13 +208,13 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 3: Goal Setup + Matching Engine [~1 hr]
 **Goal**: User creates a goal, sees ranked contacts with match scores
 
-- [ ] 3.1 Groq client service
-  - [ ] 3.1.1 app/services/groq_client.py — chat(), chat_json(), retry with backoff
+- [x] 3.1 Groq client service
+  - [x] 3.1.1 app/services/groq_client.py — chat(), chat_json(), retry with backoff
 
-- [ ] 3.2 Goal creation
-  - [ ] 3.2.1 app/templates/goal_setup.html — form with goal type dropdown, description textarea, background textarea, target roles, target companies
-  - [ ] 3.2.2 app/routers/goals.py — POST /api/goals to create goal
-  - [ ] 3.2.3 app/routers/pages.py — GET /goals/new renders form
+- [x] 3.2 Goal creation
+  - [x] 3.2.1 app/templates/goal_setup.html — form with goal type dropdown, description textarea, background textarea, target roles, target companies
+  - [x] 3.2.2 app/routers/goals.py — POST /api/goals to create goal
+  - [x] 3.2.3 app/routers/pages.py — GET /goals/new renders form
 
 - [ ] 3.3 Matching engine
   - [ ] 3.3.1 app/services/matching.py — prefilter_profiles() keyword/tag overlap scoring
