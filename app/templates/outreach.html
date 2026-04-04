@@ -3,6 +3,15 @@
 {% block title %}Outreach - AI Networking Copilot{% endblock %}
 
 {% block content %}
+<nav style="margin-bottom: 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
+    <a href="/goals/{{ goal.id }}/contacts">Contacts</a>
+    <span style="opacity: 0.4;">&rarr;</span>
+    <a href="/goals/{{ goal.id }}/templates">Templates</a>
+    <span style="opacity: 0.4;">&rarr;</span>
+    <strong>Outreach</strong>
+    <span style="opacity: 0.4;">&rarr;</span>
+    <a href="/goals/{{ goal.id }}/inbox">Inbox</a>
+</nav>
 <hgroup>
     <h1>Outreach Messages</h1>
     <p>{{ goal.description }}</p>
@@ -26,7 +35,6 @@
     <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline">
         Send All Approved
     </button>
-    <a href="/goals/{{ goal.id }}/inbox" role="button" class="outline secondary">View Inbox</a>
 </div>
 
 <script>
