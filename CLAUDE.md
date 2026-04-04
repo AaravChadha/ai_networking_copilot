@@ -247,17 +247,17 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 4.2.1 app/templates/template_editor.html — template type selector, tone dropdown, section previews, "Generate Messages" button
   - [x] 4.2.2 app/routers/pages.py — GET /goals/{id}/templates
 
-- [ ] 4.3 Message generation
-  - [ ] 4.3.1 app/services/outreach.py — generate_message() fills template per contact via Groq
-  - [ ] 4.3.2 app/services/outreach.py — batch_generate() for multiple contacts
-  - [ ] 4.3.3 app/routers/messages.py — POST /api/goals/{id}/generate
+- [x] 4.3 Message generation
+  - [x] 4.3.1 app/services/outreach.py — generate_message() fills template per contact via Groq
+  - [x] 4.3.2 app/services/outreach.py — batch_generate() for multiple contacts
+  - [x] 4.3.3 app/routers/messages.py — POST /api/goals/{id}/generate
 
-- [ ] 4.4 Outreach page
-  - [ ] 4.4.1 app/templates/outreach.html — message draft cards with edit/approve buttons
-  - [ ] 4.4.2 app/templates/partials/message_card.html — single message card
-  - [ ] 4.4.3 app/routers/messages.py — PATCH /api/messages/{id} (edit), POST /api/messages/{id}/approve
-  - [ ] 4.4.4 app/routers/pages.py — GET /goals/{id}/outreach
-  - [ ] 4.4.5 HTMX inline editing for message body
+- [x] 4.4 Outreach page
+  - [x] 4.4.1 app/templates/outreach.html — message draft cards with edit/approve buttons
+  - [x] 4.4.2 app/templates/partials/message_card.html — single message card
+  - [x] 4.4.3 app/routers/messages.py — PATCH /api/messages/{id} (edit), POST /api/messages/{id}/approve
+  - [x] 4.4.4 app/routers/pages.py — GET /goals/{id}/outreach
+  - [x] 4.4.5 HTMX inline editing for message body
 
 - [ ] 4.5 Verify: select contacts → pick template → see personalized drafts → edit and approve
 

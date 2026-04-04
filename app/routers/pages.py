@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.templating import templates
-from app.models import Goal, OutreachTemplate, SendConfig
+from app.models import Goal, Message, OutreachTemplate, SendConfig
 from app.services.matching import get_ranked_contacts
+from app.services.outreach import batch_generate
 from app.services.templates import get_templates
 
 router = APIRouter()
@@ -87,4 +88,38 @@ async def templates_page_get(request: Request, goal_id: int, profiles: str = "",
         "goal": goal,
         "profile_ids": profile_ids,
         "outreach_templates": outreach_templates,
+    })
+
+
+@router.post("/goals/{goal_id}/generate")
+async def generate_messages(
+    request: Request,
+    goal_id: int,
+    template_id: int = Form(...),
+    tone: str = Form("professional"),
+    profile_ids: list[int] = Form([]),
+    intro_override: str = Form(""),
+    context_override: str = Form(""),
+    ask_override: str = Form(""),
+    closing_override: str = Form(""),
+    db: Session = Depends(get_db),
+):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    template = db.query(OutreachTemplate).filter(OutreachTemplate.id == template_id).first()
+
+    batch_generate(
+        goal, profile_ids, template, tone,
+        intro_override, context_override, ask_override, closing_override, db,
+    )
+
+    return RedirectResponse(url=f"/goals/{goal_id}/outreach", status_code=303)
+
+
+@router.get("/goals/{goal_id}/outreach")
+async def outreach_page(request: Request, goal_id: int, db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    messages = db.query(Message).filter(Message.goal_id == goal_id).all()
+    return templates.TemplateResponse(request, "outreach.html", {
+        "goal": goal,
+        "messages": messages,
     })

@@ -1,0 +1,39 @@
+<article id="message-{{ msg.id }}" style="margin-bottom: 1rem;">
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong>{{ msg.profile.name }}</strong> — {{ msg.profile.role }} at {{ msg.profile.company }}
+        </div>
+        <div>
+            {% if msg.status == 'draft' %}
+            <span class="badge badge-neutral">Draft</span>
+            {% elif msg.status == 'approved' %}
+            <span class="badge badge-positive">Approved</span>
+            {% elif msg.status == 'sent' %}
+            <span class="badge" style="background: #cce5ff; color: #004085;">Sent</span>
+            {% elif msg.status == 'replied' %}
+            <span class="badge badge-positive">Replied</span>
+            {% endif %}
+        </div>
+    </header>
+
+    <p><strong>Subject:</strong> {{ msg.subject }}</p>
+
+    <div id="body-display-{{ msg.id }}">
+        <p style="white-space: pre-wrap;">{{ msg.body }}</p>
+    </div>
+
+    <footer style="display: flex; gap: 0.5rem;">
+        {% if msg.status == 'draft' %}
+        <button class="outline" hx-post="/api/messages/{{ msg.id }}/approve" hx-target="#message-{{ msg.id }}" hx-swap="outerHTML">
+            Approve
+        </button>
+        <button class="outline secondary" hx-get="/api/messages/{{ msg.id }}/edit" hx-target="#body-display-{{ msg.id }}" hx-swap="innerHTML">
+            Edit
+        </button>
+        {% elif msg.status == 'approved' %}
+        <button class="outline" hx-post="/api/messages/{{ msg.id }}/send" hx-target="#message-{{ msg.id }}" hx-swap="outerHTML">
+            Send
+        </button>
+        {% endif %}
+    </footer>
+</article>

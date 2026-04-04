@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Outreach - AI Networking Copilot{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Outreach Messages</h1>
+    <p>{{ goal.description }}</p>
+</hgroup>
+
+{% if messages %}
+<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+    <span>{{ messages | length }} messages</span>
+    <span>·</span>
+    <span>{{ messages | selectattr('status', 'equalto', 'draft') | list | length }} drafts</span>
+    <span>·</span>
+    <span>{{ messages | selectattr('status', 'equalto', 'approved') | list | length }} approved</span>
+    <span>·</span>
+    <span>{{ messages | selectattr('status', 'equalto', 'sent') | list | length }} sent</span>
+</div>
+
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+    <button hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" class="outline" onclick="this.setAttribute('aria-busy', 'true');">
+        Approve All Drafts
+    </button>
+    <button hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline" onclick="this.setAttribute('aria-busy', 'true');">
+        Send All Approved
+    </button>
+</div>
+
+<div id="message-list">
+    {% for msg in messages %}
+    {% include "partials/message_card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+<article style="text-align: center; padding: 2rem;">
+    <h2>No messages yet</h2>
+    <p>Go back and generate messages from the template editor.</p>
+    <a href="/goals/{{ goal.id }}/contacts" role="button" class="outline">Back to Contacts</a>
+</article>
+{% endif %}
+{% endblock %}
