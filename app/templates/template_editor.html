@@ -18,7 +18,7 @@
             <label for="template_id">Template Type</label>
             <select id="template_id" name="template_id" required>
                 {% for t in outreach_templates %}
-                <option value="{{ t.id }}" data-intro="{{ t.intro_template }}" data-context="{{ t.context_template }}" data-ask="{{ t.ask_template }}" data-closing="{{ t.closing_template }}" data-tone="{{ t.tone }}">{{ t.name }}</option>
+                <option value="{{ t.id }}" data-intro="{{ t.intro_template }}" data-context="{{ t.context_template }}" data-ask="{{ t.ask_template }}" data-closing="{{ t.closing_template }}" data-tone="{{ t.tone }}" {{ 'selected' if last_template_id and t.id == last_template_id }}>{{ t.name }}{{ ' (last used)' if last_template_id and t.id == last_template_id }}</option>
                 {% endfor %}
             </select>
         </div>

@@ -90,10 +90,19 @@ async def templates_page_get(request: Request, goal_id: int, profiles: str = "",
     goal = db.query(Goal).filter(Goal.id == goal_id).first()
     profile_ids = [int(x) for x in profiles.split(",") if x.strip()]
     outreach_templates = get_templates(db, goal_id)
+    # Find the last used template for this campaign
+    last_msg = (
+        db.query(Message)
+        .filter(Message.goal_id == goal_id, Message.template_id.isnot(None))
+        .order_by(Message.created_at.desc())
+        .first()
+    )
+    last_template_id = last_msg.template_id if last_msg else None
     return templates.TemplateResponse(request, "template_editor.html", {
         "goal": goal,
         "profile_ids": profile_ids,
         "outreach_templates": outreach_templates,
+        "last_template_id": last_template_id,
     })
 
 
