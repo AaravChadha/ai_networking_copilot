@@ -32,7 +32,7 @@
             <td><span class="badge badge-positive">{{ goal.status }}</span></td>
             <td>{{ goal.created_at.strftime('%b %d, %Y') }}</td>
             <td>
-                <a href="/goals/{{ goal.id }}/contacts" role="button" class="outline" style="margin-right: 0.5rem;">View</a>
+                <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-right: 0.5rem;">View</a>
                 <button class="outline secondary" hx-delete="/api/goals/{{ goal.id }}" hx-confirm="Delete this campaign?" hx-target="closest tr" hx-swap="outerHTML" style="margin-bottom: 0;">Delete</button>
             </td>
         </tr>

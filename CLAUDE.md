@@ -324,7 +324,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.6.8 Keep top nav for all pages; split layout only on the chat page
 
 - [ ] 6.7 Campaign navigation flow
-  - [ ] 6.7.1 Clicking a campaign on dashboard goes to outreach page (messages sent view)
+  - [x] 6.7.1 Clicking a campaign on dashboard goes to outreach page (messages sent view)
   - [ ] 6.7.2 Add breadcrumb/back navigation on outreach page: Contacts ← Templates ← Outreach → Inbox
   - [ ] 6.7.3 Contacts page — pre-check contacts that already have messages (sent/draft/approved/replied)
   - [ ] 6.7.4 Templates page — show which template was last used for this campaign
