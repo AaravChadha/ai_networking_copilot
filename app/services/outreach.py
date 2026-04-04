@@ -89,7 +89,15 @@ def batch_generate(
     db: Session,
 ) -> list[Message]:
     """Generate messages for multiple contacts with rate limiting."""
-    profiles = db.query(Profile).filter(Profile.id.in_(profile_ids)).all()
+    # Skip profiles that already have messages for this goal
+    existing_profile_ids = {
+        m.profile_id
+        for m in db.query(Message).filter(Message.goal_id == goal.id).all()
+    }
+    profiles = [
+        p for p in db.query(Profile).filter(Profile.id.in_(profile_ids)).all()
+        if p.id not in existing_profile_ids
+    ]
     messages = []
 
     for i, profile in enumerate(profiles):
