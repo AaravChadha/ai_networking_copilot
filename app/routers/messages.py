@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Goal, Message
+from app.services.inbox import generate_replies_for_sent
 from app.templating import templates
 
 router = APIRouter(prefix="/api", tags=["messages"])
@@ -28,6 +29,9 @@ async def send_message(request: Request, message_id: int, db: Session = Depends(
         msg.status = "sent"
         msg.sent_at = datetime.utcnow()
         db.commit()
+        db.refresh(msg)
+        # Generate synthetic reply for demo
+        generate_replies_for_sent([msg], db)
         db.refresh(msg)
     return templates.TemplateResponse(request, "partials/message_card.html", {"msg": msg})
 
@@ -84,5 +88,10 @@ async def send_batch(request: Request, goal_id: int, db: Session = Depends(get_d
         Message.goal_id == goal_id, Message.status == "approved"
     ).update({"status": "sent", "sent_at": datetime.utcnow()})
     db.commit()
+    messages = db.query(Message).filter(Message.goal_id == goal_id).all()
+    # Generate synthetic replies for demo
+    sent_messages = [m for m in messages if m.status == "sent"]
+    generate_replies_for_sent(sent_messages, db)
+    # Refresh to pick up status changes
     messages = db.query(Message).filter(Message.goal_id == goal_id).all()
     return templates.TemplateResponse(request, "partials/message_list.html", {"messages": messages})

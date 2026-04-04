@@ -291,11 +291,11 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 6: Inbox Intelligence [~1 hr]
 **Goal**: Sent messages get synthetic replies, classified by sentiment, with follow-up suggestions
 
-- [ ] 6.1 Synthetic reply generation
+- [x] 6.1 Synthetic reply generation
   - [x] 6.1.1 app/services/inbox.py — generate_synthetic_reply() via Groq
-  - [ ] 6.1.2 Trigger after send (~60-80% of messages get replies)
-  - [ ] 6.1.3 Randomized simulated timestamps (1-3 days after send)
-  - [ ] 6.1.4 For demo: generate immediately, display with future timestamp
+  - [x] 6.1.2 Trigger after send (~60-80% of messages get replies)
+  - [x] 6.1.3 Randomized simulated timestamps (1-3 days after send)
+  - [x] 6.1.4 For demo: generate immediately, display with future timestamp
 
 - [ ] 6.2 Reply classification
   - [ ] 6.2.1 app/services/inbox.py — classify_reply() via Groq JSON mode

@@ -56,3 +56,52 @@ Write your reply now."""
         "sentiment": sentiment,
         "reply_at": reply_at,
     }
+
+
+def generate_replies_for_sent(messages: list[Message], db: Session) -> list[Reply]:
+    """Generate synthetic replies for a list of sent messages.
+
+    ~60-80% of messages get replies. For demo mode, replies are generated
+    immediately but have future timestamps to simulate realistic delays.
+    """
+    import time
+    from app.config import settings
+
+    reply_rate = random.uniform(0.6, 0.8)
+    replies = []
+
+    for i, msg in enumerate(messages):
+        if msg.status != "sent":
+            continue
+        # Skip some messages based on reply rate
+        if random.random() > reply_rate:
+            continue
+
+        profile = msg.profile
+        if not profile:
+            profile = db.query(Profile).filter(Profile.id == msg.profile_id).first()
+
+        # Rate limit between Groq calls
+        if i > 0 and replies:
+            time.sleep(settings.GROQ_RATE_LIMIT_DELAY)
+
+        try:
+            result = generate_synthetic_reply(msg, profile)
+            reply = Reply(
+                message_id=msg.id,
+                body=result["body"],
+                sentiment=result["sentiment"],
+                reply_at=result["reply_at"],
+            )
+            db.add(reply)
+            msg.status = "replied"
+            replies.append(reply)
+        except Exception:
+            continue
+
+    if replies:
+        db.commit()
+        for r in replies:
+            db.refresh(r)
+
+    return replies
