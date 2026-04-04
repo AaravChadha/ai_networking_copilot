@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Inbox - AI Networking Copilot{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Inbox</h1>
+    <p>{{ goal.description }}</p>
+</hgroup>
+
+<nav style="margin-bottom: 1.5rem;">
+    <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline secondary">Back to Outreach</a>
+</nav>
+
+{% if replies %}
+<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+    <span>{{ replies | length }} replies</span>
+    <span>·</span>
+    <span class="badge badge-positive">{{ replies | selectattr('sentiment', 'equalto', 'positive') | list | length }} positive</span>
+    <span class="badge badge-neutral">{{ replies | selectattr('sentiment', 'equalto', 'neutral') | list | length }} neutral</span>
+    <span class="badge badge-negative">{{ replies | selectattr('sentiment', 'equalto', 'negative') | list | length }} negative</span>
+</div>
+
+{% set positive_replies = replies | selectattr('sentiment', 'equalto', 'positive') | list %}
+{% set neutral_replies = replies | selectattr('sentiment', 'equalto', 'neutral') | list %}
+{% set negative_replies = replies | selectattr('sentiment', 'equalto', 'negative') | list %}
+
+{% if positive_replies %}
+<h3 style="color: #155724;">Positive Replies</h3>
+<div id="positive-list">
+    {% for reply in positive_replies %}
+    {% include "partials/reply_card.html" %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if neutral_replies %}
+<h3 style="color: #856404;">Neutral Replies</h3>
+<div id="neutral-list">
+    {% for reply in neutral_replies %}
+    {% include "partials/reply_card.html" %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if negative_replies %}
+<h3 style="color: #721c24;">Negative Replies</h3>
+<div id="negative-list">
+    {% for reply in negative_replies %}
+    {% include "partials/reply_card.html" %}
+    {% endfor %}
+</div>
+{% endif %}
+
+{% else %}
+<article style="text-align: center; padding: 2rem;">
+    <h2>No replies yet</h2>
+    <p>Send some messages first — replies will appear here after sending.</p>
+    <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline">Go to Outreach</a>
+</article>
+{% endif %}
+{% endblock %}
