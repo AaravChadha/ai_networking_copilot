@@ -342,9 +342,9 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 7.1.2 Metrics: messages sent, reply rate, sentiment breakdown, pending follow-ups
   - [x] 7.1.3 app/templates/dashboard.html — stats cards, campaign list with status
 
-- [ ] 7.2 Charts
-  - [ ] 7.2.1 Chart.js via CDN — sentiment pie chart, messages over time bar chart
-  - [ ] 7.2.2 Data injected via Jinja2 template variables
+- [x] 7.2 Charts
+  - [x] 7.2.1 Chart.js via CDN — sentiment pie chart, messages over time bar chart
+  - [x] 7.2.2 Data injected via Jinja2 template variables
 
 - [ ] 7.3 Visual polish
   - [ ] 7.3.1 Loading states (HTMX indicators)

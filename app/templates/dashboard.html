@@ -2,6 +2,10 @@
 
 {% block title %}Dashboard - AI Networking Copilot{% endblock %}
 
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <h1>Dashboard</h1>
 
@@ -24,6 +28,55 @@
         <p>Pending Follow-ups</p>
     </article>
 </div>
+
+{% set total_pos = goal_stats.values() | map(attribute='positive') | sum %}
+{% set total_neu = goal_stats.values() | map(attribute='neutral') | sum %}
+{% set total_neg = goal_stats.values() | map(attribute='negative') | sum %}
+
+{% if total_pos or total_neu or total_neg %}
+<div class="grid" style="margin-bottom: 2rem;">
+    <article>
+        <h4 style="text-align: center;">Reply Sentiment</h4>
+        <canvas id="sentimentChart" style="max-height: 250px;"></canvas>
+    </article>
+    <article>
+        <h4 style="text-align: center;">Messages by Campaign</h4>
+        <canvas id="campaignChart" style="max-height: 250px;"></canvas>
+    </article>
+</div>
+
+<script>
+new Chart(document.getElementById('sentimentChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Positive', 'Neutral', 'Negative'],
+        datasets: [{
+            data: [{{ total_pos }}, {{ total_neu }}, {{ total_neg }}],
+            backgroundColor: ['#d4edda', '#fff3cd', '#f8d7da'],
+            borderColor: ['#155724', '#856404', '#721c24'],
+            borderWidth: 1
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('campaignChart'), {
+    type: 'bar',
+    data: {
+        labels: [{% for g in goals %}'{{ g.description[:20] }}...'{{ ', ' if not loop.last }}{% endfor %}],
+        datasets: [
+            { label: 'Sent', data: [{% for g in goals %}{{ goal_stats[g.id].sent }}{{ ', ' if not loop.last }}{% endfor %}], backgroundColor: '#d1e7ff' },
+            { label: 'Replies', data: [{% for g in goals %}{{ goal_stats[g.id].replies }}{{ ', ' if not loop.last }}{% endfor %}], backgroundColor: '#d4edda' }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
+</script>
+{% endif %}
 
 <h2>Your Campaigns</h2>
 {% for goal in goals %}
