@@ -27,30 +27,30 @@
     <span class="badge badge-negative">{{ threads | selectattr('sentiment', 'equalto', 'negative') | list | length }} negative</span>
 </div>
 
-{% set positive_threads = threads | selectattr('sentiment', 'equalto', 'positive') | list %}
-{% set neutral_threads = threads | selectattr('sentiment', 'equalto', 'neutral') | list %}
-{% set negative_threads = threads | selectattr('sentiment', 'equalto', 'negative') | list %}
-
-{% if positive_threads %}
-<h3 style="color: #155724;">Positive</h3>
-{% for thread in positive_threads %}
-{% include "partials/thread_card.html" %}
-{% endfor %}
-{% endif %}
-
-{% if neutral_threads %}
-<h3 style="color: #856404;">Neutral</h3>
-{% for thread in neutral_threads %}
-{% include "partials/thread_card.html" %}
-{% endfor %}
-{% endif %}
-
-{% if negative_threads %}
-<h3 style="color: #721c24;">Negative</h3>
-{% for thread in negative_threads %}
-{% include "partials/thread_card.html" %}
-{% endfor %}
-{% endif %}
+<div role="list" style="display: flex; flex-direction: column; gap: 0;">
+    {% for thread in threads %}
+    <a href="/goals/{{ thread.message.goal_id }}/inbox/{{ thread.message.id }}"
+       role="listitem"
+       style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; color: inherit; border-bottom: 1px solid var(--pico-muted-border-color);">
+        <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <strong style="font-size: 0.95rem;">{{ thread.message.profile.name }}</strong>
+                <span style="font-size: 0.8rem; opacity: 0.6;">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
+            </div>
+            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ thread.last_preview }}
+            </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+            <span style="font-size: 0.8rem; opacity: 0.5;">{{ thread.reply_count }} msg{{ 's' if thread.reply_count != 1 }}</span>
+            {% if thread.is_concluded %}
+            <span class="badge" style="background: #e2e3e5; color: #383d41; font-size: 0.75rem;">Done</span>
+            {% endif %}
+            <span class="badge badge-{{ thread.sentiment }}" style="font-size: 0.75rem;">{{ thread.sentiment | capitalize }}</span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
 
 {% else %}
 <article style="text-align: center; padding: 2rem;">

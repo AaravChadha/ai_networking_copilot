@@ -164,12 +164,17 @@ def _build_threads(db: Session, goal_id: int = None) -> list[dict]:
         message = db.query(Message).filter(Message.id == message_id).first()
         inbound = [r for r in replies if r.direction == "inbound"]
         latest_inbound = inbound[-1] if inbound else None
+        # Last message in the thread (inbound or outbound)
+        last_reply = replies[-1] if replies else None
+        last_preview = (last_reply.body[:80] + "...") if last_reply and len(last_reply.body) > 80 else (last_reply.body if last_reply else "")
         threads.append({
             "message": message,
             "replies": replies,
             "latest_inbound": latest_inbound,
             "sentiment": latest_inbound.sentiment if latest_inbound else "neutral",
             "is_concluded": latest_inbound.is_conclusion if latest_inbound else False,
+            "reply_count": len(replies),
+            "last_preview": last_preview,
         })
 
     return threads
