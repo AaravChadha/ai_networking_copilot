@@ -17,8 +17,45 @@ router = APIRouter()
 @router.get("/")
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     goals = db.query(Goal).order_by(Goal.created_at.desc()).all()
+
+    # Aggregate stats across all campaigns
+    all_messages = db.query(Message).all()
+    total_sent = sum(1 for m in all_messages if m.status in ("sent", "replied"))
+    msg_ids = [m.id for m in all_messages]
+    all_inbound = (
+        db.query(Reply)
+        .filter(Reply.message_id.in_(msg_ids), Reply.direction == "inbound")
+        .all()
+    ) if msg_ids else []
+    total_replies = len({r.message_id for r in all_inbound})
+    total_reply_rate = round(total_replies / total_sent * 100, 1) if total_sent > 0 else 0
+    total_pending = sum(1 for r in all_inbound if r.follow_up_status == "pending")
+
+    # Per-goal stats
+    goal_stats = {}
+    for goal in goals:
+        msgs = [m for m in all_messages if m.goal_id == goal.id]
+        sent = sum(1 for m in msgs if m.status in ("sent", "replied"))
+        g_ids = [m.id for m in msgs]
+        inbound = [r for r in all_inbound if r.message_id in set(g_ids)]
+        replies = len({r.message_id for r in inbound})
+        goal_stats[goal.id] = {
+            "total": len(msgs),
+            "sent": sent,
+            "replies": replies,
+            "reply_rate": round(replies / sent * 100, 1) if sent > 0 else 0,
+            "positive": sum(1 for r in inbound if r.sentiment == "positive"),
+            "neutral": sum(1 for r in inbound if r.sentiment == "neutral"),
+            "negative": sum(1 for r in inbound if r.sentiment == "negative"),
+        }
+
     return templates.TemplateResponse(request, "dashboard.html", {
         "goals": goals,
+        "total_sent": total_sent,
+        "total_replies": total_replies,
+        "total_reply_rate": total_reply_rate,
+        "total_pending": total_pending,
+        "goal_stats": goal_stats,
     })
 
 

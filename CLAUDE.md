@@ -337,10 +337,10 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 7: Dashboard + Polish [~1 hr]
 **Goal**: Polished dashboard with campaign stats and charts
 
-- [ ] 7.1 Dashboard stats
+- [x] 7.1 Dashboard stats
   - [x] 7.1.1 app/routers/goals.py — GET /api/goals/{id}/stats
   - [x] 7.1.2 Metrics: messages sent, reply rate, sentiment breakdown, pending follow-ups
-  - [ ] 7.1.3 app/templates/dashboard.html — stats cards, campaign list with status
+  - [x] 7.1.3 app/templates/dashboard.html — stats cards, campaign list with status
 
 - [ ] 7.2 Charts
   - [ ] 7.2.1 Chart.js via CDN — sentiment pie chart, messages over time bar chart

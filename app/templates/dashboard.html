@@ -9,36 +9,57 @@
 <div class="stats-grid" style="margin-bottom: 2rem;">
     <article class="stat-card">
         <h2>{{ goals | length }}</h2>
-        <p>Active Campaigns</p>
+        <p>Campaigns</p>
+    </article>
+    <article class="stat-card">
+        <h2>{{ total_sent }}</h2>
+        <p>Messages Sent</p>
+    </article>
+    <article class="stat-card">
+        <h2>{{ total_replies }}</h2>
+        <p>Replies ({{ total_reply_rate }}%)</p>
+    </article>
+    <article class="stat-card">
+        <h2>{{ total_pending }}</h2>
+        <p>Pending Follow-ups</p>
     </article>
 </div>
 
 <h2>Your Campaigns</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Goal</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for goal in goals %}
-        <tr>
-            <td>{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</td>
-            <td>{{ goal.goal_type }}</td>
-            <td><span class="badge badge-positive">{{ goal.status }}</span></td>
-            <td>{{ goal.created_at.strftime('%b %d, %Y') }}</td>
-            <td>
-                <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-right: 0.5rem;">View</a>
-                <button class="outline secondary" hx-delete="/api/goals/{{ goal.id }}" hx-confirm="Delete this campaign?" hx-target="closest tr" hx-swap="outerHTML" style="margin-bottom: 0;">Delete</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% for goal in goals %}
+{% set stats = goal_stats[goal.id] %}
+<article style="margin-bottom: 1rem;">
+    <header style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong>{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
+            <br><small style="opacity: 0.6;">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="badge badge-positive">{{ goal.status }}</span>
+        </div>
+    </header>
+    <div class="stats-grid" style="margin-bottom: 0.75rem;">
+        <div style="text-align: center;">
+            <strong>{{ stats.sent }}</strong><br><small>Sent</small>
+        </div>
+        <div style="text-align: center;">
+            <strong>{{ stats.replies }}</strong><br><small>Replies ({{ stats.reply_rate }}%)</small>
+        </div>
+        <div style="text-align: center;">
+            <span style="color: #155724;">{{ stats.positive }}</span> /
+            <span style="color: #856404;">{{ stats.neutral }}</span> /
+            <span style="color: #721c24;">{{ stats.negative }}</span>
+            <br><small>Pos / Neu / Neg</small>
+        </div>
+    </div>
+    <footer style="display: flex; gap: 0.5rem;">
+        <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-bottom: 0;">View Campaign</a>
+        <a href="/goals/{{ goal.id }}/inbox" role="button" class="outline secondary" style="margin-bottom: 0;">Inbox</a>
+        <button class="outline secondary" hx-delete="/api/goals/{{ goal.id }}" hx-confirm="Delete this campaign?" hx-target="closest article" hx-swap="outerHTML" style="margin-bottom: 0;">Delete</button>
+    </footer>
+</article>
+{% endfor %}
+
 {% else %}
 <article style="text-align: center; padding: 3rem;">
     <h2>No campaigns yet</h2>
