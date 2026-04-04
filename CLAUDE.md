@@ -298,7 +298,7 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.1.4 For demo: generate immediately, display with future timestamp
 
 - [ ] 6.2 Reply classification
-  - [ ] 6.2.1 app/services/inbox.py — classify_reply() via Groq JSON mode
+  - [x] 6.2.1 app/services/inbox.py — classify_reply() via Groq JSON mode
   - [ ] 6.2.2 Returns sentiment (positive/neutral/negative) + key signal phrases
 
 - [ ] 6.3 Follow-up suggestions

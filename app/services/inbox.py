@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.models import Message, Profile, Reply
-from app.services.groq_client import chat
+from app.services.groq_client import chat, chat_json
 
 
 def generate_synthetic_reply(message: Message, profile: Profile) -> dict:
@@ -56,6 +56,44 @@ Write your reply now."""
         "sentiment": sentiment,
         "reply_at": reply_at,
     }
+
+
+def classify_reply(reply_body: str, original_message: str) -> dict:
+    """Classify a reply's sentiment and extract key signal phrases via Groq JSON mode.
+
+    Returns dict with sentiment (positive/neutral/negative) and signals (list of key phrases).
+    """
+    system_prompt = """You are an email reply analyst. Classify the sentiment of a reply to a networking outreach message and extract key signal phrases.
+
+Return JSON with exactly this structure:
+{
+  "sentiment": "positive" | "neutral" | "negative",
+  "signals": ["signal phrase 1", "signal phrase 2", ...]
+}
+
+Signals are short phrases (3-8 words) that indicate the recipient's intent. Examples:
+- Positive: "happy to chat", "let's schedule a call", "I'd love to help"
+- Neutral: "let me think about it", "send me more details", "busy right now"
+- Negative: "not interested", "not the right fit", "too busy to meet"
+
+Return 2-4 signal phrases."""
+
+    user_prompt = f"""ORIGINAL OUTREACH MESSAGE:
+{original_message}
+
+REPLY RECEIVED:
+{reply_body}
+
+Classify this reply."""
+
+    result = chat_json(system_prompt, user_prompt)
+
+    sentiment = result.get("sentiment", "neutral")
+    if sentiment not in ("positive", "neutral", "negative"):
+        sentiment = "neutral"
+    signals = result.get("signals", [])
+
+    return {"sentiment": sentiment, "signals": signals}
 
 
 def generate_replies_for_sent(messages: list[Message], db: Session) -> list[Reply]:
