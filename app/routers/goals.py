@@ -44,6 +44,45 @@ async def get_goal(goal_id: int, db: Session = Depends(get_db)):
     return _goal_to_response(goal)
 
 
+@router.get("/{goal_id}/stats")
+async def get_goal_stats(goal_id: int, db: Session = Depends(get_db)):
+    """Get campaign stats: messages sent, reply rate, sentiment breakdown, pending follow-ups."""
+    messages = db.query(Message).filter(Message.goal_id == goal_id).all()
+    total = len(messages)
+    sent = sum(1 for m in messages if m.status in ("sent", "replied"))
+    drafts = sum(1 for m in messages if m.status == "draft")
+    approved = sum(1 for m in messages if m.status == "approved")
+
+    # Get all inbound replies for this goal
+    msg_ids = [m.id for m in messages]
+    replies = (
+        db.query(Reply)
+        .filter(Reply.message_id.in_(msg_ids), Reply.direction == "inbound")
+        .all()
+    ) if msg_ids else []
+
+    replied_message_ids = {r.message_id for r in replies}
+    reply_rate = (len(replied_message_ids) / sent * 100) if sent > 0 else 0
+
+    positive = sum(1 for r in replies if r.sentiment == "positive")
+    neutral = sum(1 for r in replies if r.sentiment == "neutral")
+    negative = sum(1 for r in replies if r.sentiment == "negative")
+    pending_followups = sum(1 for r in replies if r.follow_up_status == "pending")
+
+    return {
+        "total_messages": total,
+        "drafts": drafts,
+        "approved": approved,
+        "sent": sent,
+        "replies": len(replied_message_ids),
+        "reply_rate": round(reply_rate, 1),
+        "positive": positive,
+        "neutral": neutral,
+        "negative": negative,
+        "pending_followups": pending_followups,
+    }
+
+
 @router.delete("/{goal_id}")
 async def delete_goal(goal_id: int, db: Session = Depends(get_db)):
     goal = db.query(Goal).filter(Goal.id == goal_id).first()

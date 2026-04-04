@@ -338,8 +338,8 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 **Goal**: Polished dashboard with campaign stats and charts
 
 - [ ] 7.1 Dashboard stats
-  - [ ] 7.1.1 app/routers/goals.py — GET /api/goals/{id}/stats
-  - [ ] 7.1.2 Metrics: messages sent, reply rate, sentiment breakdown, pending follow-ups
+  - [x] 7.1.1 app/routers/goals.py — GET /api/goals/{id}/stats
+  - [x] 7.1.2 Metrics: messages sent, reply rate, sentiment breakdown, pending follow-ups
   - [ ] 7.1.3 app/templates/dashboard.html — stats cards, campaign list with status
 
 - [ ] 7.2 Charts
