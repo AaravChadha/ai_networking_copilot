@@ -301,11 +301,11 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.2.1 app/services/inbox.py — classify_reply() via Groq JSON mode
   - [x] 6.2.2 Returns sentiment (positive/neutral/negative) + key signal phrases
 
-- [ ] 6.3 Follow-up suggestions
+- [x] 6.3 Follow-up suggestions
   - [x] 6.3.1 app/services/inbox.py — suggest_follow_up() via Groq
-  - [ ] 6.3.2 Positive → schedule meeting / next steps
-  - [ ] 6.3.3 Neutral → provide more context / lighter ask
-  - [ ] 6.3.4 Negative → graceful close / alternative connection
+  - [x] 6.3.2 Positive → schedule meeting / next steps
+  - [x] 6.3.3 Neutral → provide more context / lighter ask
+  - [x] 6.3.4 Negative → graceful close / alternative connection
 
 - [ ] 6.4 Inbox page
   - [ ] 6.4.1 app/templates/inbox.html — replies grouped by sentiment (color-coded)
