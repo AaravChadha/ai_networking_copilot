@@ -346,12 +346,12 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 7.2.1 Chart.js via CDN — sentiment pie chart, messages over time bar chart
   - [x] 7.2.2 Data injected via Jinja2 template variables
 
-- [ ] 7.3 Visual polish
-  - [ ] 7.3.1 Loading states (HTMX indicators)
-  - [ ] 7.3.2 Success/error toast notifications
-  - [ ] 7.3.3 Empty states with helpful CTAs
-  - [ ] 7.3.4 Nav bar highlighting active page
-  - [ ] 7.3.5 Responsive layout check
+- [x] 7.3 Visual polish
+  - [x] 7.3.1 Loading states (HTMX indicators)
+  - [x] 7.3.2 Success/error toast notifications
+  - [x] 7.3.3 Empty states with helpful CTAs
+  - [x] 7.3.4 Nav bar highlighting active page
+  - [x] 7.3.5 Responsive layout check
 
 - [ ] 7.4 Demo readiness
   - [ ] 7.4.1 Seed DB with sample goal + messages + replies as fallback demo data

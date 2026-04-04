@@ -56,12 +56,13 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         "total_reply_rate": total_reply_rate,
         "total_pending": total_pending,
         "goal_stats": goal_stats,
+        "active_page": "dashboard",
     })
 
 
 @router.get("/goals/new")
 async def goal_setup(request: Request):
-    return templates.TemplateResponse(request, "goal_setup.html", {})
+    return templates.TemplateResponse(request, "goal_setup.html", {"active_page": "goals"})
 
 
 @router.post("/goals/new")
@@ -194,6 +195,7 @@ async def inbox_page(request: Request, goal_id: int, db: Session = Depends(get_d
     return templates.TemplateResponse(request, "inbox.html", {
         "goal": goal,
         "threads": threads,
+        "active_page": "inbox",
     })
 
 

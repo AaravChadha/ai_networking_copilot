@@ -29,11 +29,11 @@
 </div>
 
 <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-    <button id="approve-all-btn" hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" class="outline">
-        Approve All Drafts
+    <button id="approve-all-btn" hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this" class="outline">
+        Approve All Drafts <span class="htmx-indicator" aria-busy="true"></span>
     </button>
-    <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline">
-        Send All Approved
+    <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this" class="outline">
+        Send All Approved <span class="htmx-indicator" aria-busy="true"></span>
     </button>
 </div>
 

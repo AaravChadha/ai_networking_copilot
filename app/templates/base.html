@@ -18,6 +18,19 @@
         .stat-card h2 { margin-bottom: 0.25rem; }
         .htmx-indicator { display: none; }
         .htmx-request .htmx-indicator { display: inline; }
+        .htmx-request button { opacity: 0.6; pointer-events: none; }
+        /* Toast notifications */
+        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; animation: toast-in 0.3s ease, toast-out 0.3s ease 2.7s forwards; }
+        .toast-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .toast-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        @keyframes toast-in { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
+        /* Responsive chat */
+        @media (max-width: 768px) {
+            .chat-layout { grid-template-columns: 1fr !important; height: auto !important; }
+            .chat-sidebar { max-height: 200px; border-right: none !important; border-bottom: 1px solid var(--pico-muted-border-color); }
+        }
     </style>
     {% block head %}{% endblock %}
 </head>
@@ -35,5 +48,17 @@
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <div class="toast-container" id="toast-container"></div>
+    <script>
+    function showToast(msg, type) {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast toast-' + (type || 'success');
+        t.textContent = msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+    document.body.addEventListener('htmx:responseError', function() { showToast('Something went wrong', 'error'); });
+    </script>
 </body>
 </html>
