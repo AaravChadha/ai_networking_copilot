@@ -243,9 +243,9 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
     - Custom
   - [x] 4.1.2 Each template has: intro, context, ask, closing sections with {variables}
 
-- [ ] 4.2 Template editor page
-  - [ ] 4.2.1 app/templates/template_editor.html — template type selector, tone dropdown, section previews, "Generate Messages" button
-  - [ ] 4.2.2 app/routers/pages.py — GET /goals/{id}/templates
+- [x] 4.2 Template editor page
+  - [x] 4.2.1 app/templates/template_editor.html — template type selector, tone dropdown, section previews, "Generate Messages" button
+  - [x] 4.2.2 app/routers/pages.py — GET /goals/{id}/templates
 
 - [ ] 4.3 Message generation
   - [ ] 4.3.1 app/services/outreach.py — generate_message() fills template per contact via Groq

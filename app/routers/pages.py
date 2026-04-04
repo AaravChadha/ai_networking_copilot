@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.templating import templates
-from app.models import Goal, SendConfig
+from app.models import Goal, OutreachTemplate, SendConfig
 from app.services.matching import get_ranked_contacts
+from app.services.templates import get_templates
 
 router = APIRouter()
 
@@ -81,7 +82,9 @@ async def templates_page_post(
 async def templates_page_get(request: Request, goal_id: int, profiles: str = "", db: Session = Depends(get_db)):
     goal = db.query(Goal).filter(Goal.id == goal_id).first()
     profile_ids = [int(x) for x in profiles.split(",") if x.strip()]
+    outreach_templates = get_templates(db, goal_id)
     return templates.TemplateResponse(request, "template_editor.html", {
         "goal": goal,
         "profile_ids": profile_ids,
+        "outreach_templates": outreach_templates,
     })

@@ -5,14 +5,80 @@
 {% block content %}
 <hgroup>
     <h1>Choose Outreach Template</h1>
-    <p>{{ goal.description }}</p>
+    <p>{{ goal.description }} — <strong>{{ profile_ids | length }}</strong> contacts selected</p>
 </hgroup>
 
-<p><strong>{{ profile_ids | length }}</strong> contacts selected</p>
+<form method="post" action="/goals/{{ goal.id }}/generate">
+    {% for pid in profile_ids %}
+    <input type="hidden" name="profile_ids" value="{{ pid }}">
+    {% endfor %}
 
-<article style="text-align: center; padding: 2rem;">
-    <h2>Coming soon</h2>
-    <p>Template editor will be built in Phase 4.</p>
-    <a href="/goals/{{ goal.id }}/contacts" role="button" class="outline">Back to Contacts</a>
-</article>
+    <div class="grid">
+        <div>
+            <label for="template_id">Template Type</label>
+            <select id="template_id" name="template_id" required>
+                {% for t in outreach_templates %}
+                <option value="{{ t.id }}" data-intro="{{ t.intro_template }}" data-context="{{ t.context_template }}" data-ask="{{ t.ask_template }}" data-closing="{{ t.closing_template }}" data-tone="{{ t.tone }}">{{ t.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="tone">Tone</label>
+            <select id="tone" name="tone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="casual">Casual</option>
+                <option value="enthusiastic">Enthusiastic</option>
+            </select>
+        </div>
+    </div>
+
+    <h3>Template Preview</h3>
+    <p><small>These are instructions the AI will follow to write each section of your message. Each message will be unique and personalized to the recipient.</small></p>
+
+    <details open>
+        <summary><strong>Introduction</strong></summary>
+        <textarea id="preview-intro" name="intro_override" rows="3"></textarea>
+    </details>
+
+    <details open>
+        <summary><strong>Context / Your Story</strong></summary>
+        <textarea id="preview-context" name="context_override" rows="3"></textarea>
+    </details>
+
+    <details open>
+        <summary><strong>The Ask</strong></summary>
+        <textarea id="preview-ask" name="ask_override" rows="3"></textarea>
+    </details>
+
+    <details open>
+        <summary><strong>Closing</strong></summary>
+        <textarea id="preview-closing" name="closing_override" rows="3"></textarea>
+    </details>
+
+    <button type="submit" onclick="this.setAttribute('aria-busy', 'true'); this.textContent='Generating personalized messages...';">
+        Generate Messages
+    </button>
+</form>
+
+<script>
+const select = document.getElementById('template_id');
+const toneSelect = document.getElementById('tone');
+const introEl = document.getElementById('preview-intro');
+const contextEl = document.getElementById('preview-context');
+const askEl = document.getElementById('preview-ask');
+const closingEl = document.getElementById('preview-closing');
+
+function updatePreview() {
+    const opt = select.options[select.selectedIndex];
+    introEl.value = opt.dataset.intro;
+    contextEl.value = opt.dataset.context;
+    askEl.value = opt.dataset.ask;
+    closingEl.value = opt.dataset.closing;
+    toneSelect.value = opt.dataset.tone;
+}
+
+select.addEventListener('change', updatePreview);
+updatePreview();
+</script>
 {% endblock %}
