@@ -313,15 +313,15 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.4.3 app/routers/inbox.py — GET /api/goals/{id}/inbox, POST /api/replies/{id}/follow-up
   - [x] 6.4.4 app/routers/pages.py — GET /goals/{id}/inbox
 
-- [ ] 6.6 Conversation UX improvements
+- [x] 6.6 Conversation UX improvements
   - [x] 6.6.1 Don't auto-send follow-up — clicking "Send Response" should show editable textarea first, then confirm to send
   - [x] 6.6.2 Inbox overview as contact list — show each thread as a row with name, sentiment badge, last message preview, and reply count
   - [x] 6.6.3 Chat page at /goals/{id}/inbox/{message_id} — split layout: thread list sidebar on left, chat on right
-  - [ ] 6.6.4 Sidebar — list of all threads for this goal with name, sentiment badge, last message preview; clicking switches chat panel
-  - [ ] 6.6.5 Chat panel — WhatsApp-style bubbles (left/green = them, right/blue = you), scrollable, auto-scroll to bottom
-  - [ ] 6.6.6 AI suggestion box at bottom of chat panel — editable textarea with send + skip buttons
-  - [ ] 6.6.7 After sending, stay on chat page and show new reply inline (HTMX swap)
-  - [ ] 6.6.8 Keep top nav for all pages; split layout only on the chat page
+  - [x] 6.6.4 Sidebar — list of all threads for this goal with name, sentiment badge, last message preview; clicking switches chat panel
+  - [x] 6.6.5 Chat panel — WhatsApp-style bubbles (left/green = them, right/blue = you), scrollable, auto-scroll to bottom
+  - [x] 6.6.6 AI suggestion box at bottom of chat panel — editable textarea with send + skip buttons
+  - [x] 6.6.7 After sending, stay on chat page and show new reply inline (HTMX swap)
+  - [x] 6.6.8 Keep top nav for all pages; split layout only on the chat page
 
 - [ ] 6.7 Campaign navigation flow
   - [ ] 6.7.1 Clicking a campaign on dashboard goes to outreach page (messages sent view)
