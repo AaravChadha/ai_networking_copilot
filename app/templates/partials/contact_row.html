@@ -1,0 +1,8 @@
+<tr>
+    <td><input type="checkbox" name="profile_ids" value="{{ c.profile.id }}" {% if checked %}checked{% endif %}></td>
+    <td><strong>{{ c.score }}</strong></td>
+    <td>{{ c.profile.name }}</td>
+    <td>{{ c.profile.role }}</td>
+    <td>{{ c.profile.company }}</td>
+    <td><small>{{ c.reason }}</small></td>
+</tr>

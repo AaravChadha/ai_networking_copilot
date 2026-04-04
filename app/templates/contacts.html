@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts - AI Networking Copilot{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Matched Contacts</h1>
+    <p>{{ goal.description }}</p>
+</hgroup>
+
+{% if contacts %}
+<form method="post" action="/goals/{{ goal.id }}/templates">
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>Score</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Company</th>
+                <th>Match Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in contacts %}
+            <tr>
+                <td><input type="checkbox" name="profile_ids" value="{{ c.profile.id }}"></td>
+                <td><strong>{{ c.score }}</strong></td>
+                <td>{{ c.profile.name }}</td>
+                <td>{{ c.profile.role }}</td>
+                <td>{{ c.profile.company }}</td>
+                <td><small>{{ c.reason }}</small></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Next: Choose Template</button>
+</form>
+
+<script>
+document.getElementById('select-all').addEventListener('change', function() {
+    document.querySelectorAll('input[name="profile_ids"]').forEach(cb => cb.checked = this.checked);
+});
+</script>
+{% else %}
+<article style="text-align: center; padding: 2rem;">
+    <h2>No matches found</h2>
+    <p>Try adjusting your goal description or target roles/companies.</p>
+    <a href="/goals/new" role="button" class="outline">Edit Campaign</a>
+</article>
+{% endif %}
+{% endblock %}

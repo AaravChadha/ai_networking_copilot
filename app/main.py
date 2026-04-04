@@ -41,7 +41,8 @@ def seed_profiles():
 
 app = FastAPI(title="AI Networking Copilot", lifespan=lifespan)
 
-from app.routers import pages, goals  # noqa: E402
+from app.routers import pages, goals, contacts  # noqa: E402
 
 app.include_router(pages.router)
 app.include_router(goals.router)
+app.include_router(contacts.router)

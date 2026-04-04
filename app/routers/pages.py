@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.templating import templates
 from app.models import Goal, SendConfig
+from app.services.matching import get_ranked_contacts
 
 router = APIRouter()
 
@@ -52,3 +53,13 @@ async def create_goal_form(
     db.commit()
 
     return RedirectResponse(url=f"/goals/{goal.id}/contacts", status_code=303)
+
+
+@router.get("/goals/{goal_id}/contacts")
+async def contacts_page(request: Request, goal_id: int, db: Session = Depends(get_db)):
+    goal = db.query(Goal).filter(Goal.id == goal_id).first()
+    contacts = get_ranked_contacts(goal, db)
+    return templates.TemplateResponse(request, "contacts.html", {
+        "goal": goal,
+        "contacts": contacts,
+    })

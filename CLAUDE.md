@@ -216,16 +216,16 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 3.2.2 app/routers/goals.py — POST /api/goals to create goal
   - [x] 3.2.3 app/routers/pages.py — GET /goals/new renders form
 
-- [ ] 3.3 Matching engine
-  - [ ] 3.3.1 app/services/matching.py — prefilter_profiles() keyword/tag overlap scoring
-  - [ ] 3.3.2 app/services/matching.py — ai_rank_profiles() single Groq call for top ~50
+- [x] 3.3 Matching engine
+  - [x] 3.3.1 app/services/matching.py — prefilter_profiles() keyword/tag overlap scoring
+  - [x] 3.3.2 app/services/matching.py — ai_rank_profiles() single Groq call for top ~50
   - [ ] 3.3.3 Store rankings in DB (cache results per goal)
 
-- [ ] 3.4 Contacts page
-  - [ ] 3.4.1 app/templates/contacts.html — ranked list with score, match reason, checkboxes
-  - [ ] 3.4.2 app/templates/partials/contact_row.html — single contact row partial
-  - [ ] 3.4.3 app/routers/contacts.py — GET /api/goals/{id}/matches
-  - [ ] 3.4.4 app/routers/pages.py — GET /goals/{id}/contacts
+- [x] 3.4 Contacts page
+  - [x] 3.4.1 app/templates/contacts.html — ranked list with score, match reason, checkboxes
+  - [x] 3.4.2 app/templates/partials/contact_row.html — single contact row partial
+  - [x] 3.4.3 app/routers/contacts.py — GET /api/goals/{id}/matches
+  - [x] 3.4.4 app/routers/pages.py — GET /goals/{id}/contacts
 
 - [ ] 3.5 Verify: create goal → see ranked contacts with scores and reasons
 
