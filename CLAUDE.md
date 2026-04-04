@@ -313,8 +313,6 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [x] 6.4.3 app/routers/inbox.py — GET /api/goals/{id}/inbox, POST /api/replies/{id}/follow-up
   - [x] 6.4.4 app/routers/pages.py — GET /goals/{id}/inbox
 
-- [ ] 6.5 Verify: sent messages → replies appear → correctly classified → follow-ups suggested
-
 - [ ] 6.6 Conversation UX improvements
   - [ ] 6.6.1 Don't auto-send follow-up — clicking "Send Response" should show editable textarea first, then confirm to send
   - [ ] 6.6.2 Inbox overview as contact list — show each thread as a row with name, sentiment badge, last message preview, and reply count
@@ -331,6 +329,8 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
   - [ ] 6.7.3 Contacts page — pre-check contacts that already have messages (sent/draft/approved/replied)
   - [ ] 6.7.4 Templates page — show which template was last used for this campaign
   - [ ] 6.7.5 Allow re-running generate for newly selected contacts without duplicating existing messages
+
+- [ ] 6.8 Verify: full end-to-end flow — send messages → replies appear → chat works → navigation between pages
 
 ---
 
