@@ -20,13 +20,26 @@
 </div>
 
 <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-    <button hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" class="outline" onclick="this.setAttribute('aria-busy', 'true');">
+    <button id="approve-all-btn" hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" class="outline">
         Approve All Drafts
     </button>
-    <button hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline" onclick="this.setAttribute('aria-busy', 'true');">
+    <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" class="outline">
         Send All Approved
     </button>
 </div>
+
+<script>
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+    document.querySelectorAll('#approve-all-btn, #send-all-btn').forEach(function(btn) {
+        btn.removeAttribute('aria-busy');
+        btn.disabled = false;
+    });
+    // Reload page to update counters
+    if (evt.detail.elt.id === 'approve-all-btn' || evt.detail.elt.id === 'send-all-btn') {
+        window.location.reload();
+    }
+});
+</script>
 
 <div id="message-list">
     {% for msg in messages %}

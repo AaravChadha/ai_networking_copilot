@@ -56,9 +56,7 @@
         <textarea id="preview-closing" name="closing_override" rows="3"></textarea>
     </details>
 
-    <button type="submit" onclick="this.setAttribute('aria-busy', 'true'); this.textContent='Generating personalized messages...';">
-        Generate Messages
-    </button>
+    <button type="submit" id="generate-btn">Generate Messages</button>
 </form>
 
 <script>
@@ -80,5 +78,12 @@ function updatePreview() {
 
 select.addEventListener('change', updatePreview);
 updatePreview();
+
+document.querySelector('form').addEventListener('submit', function() {
+    const btn = document.getElementById('generate-btn');
+    btn.setAttribute('aria-busy', 'true');
+    btn.textContent = 'Generating personalized messages...';
+    btn.disabled = true;
+});
 </script>
 {% endblock %}
