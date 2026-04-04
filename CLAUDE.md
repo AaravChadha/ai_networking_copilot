@@ -191,17 +191,17 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 2: Synthetic Data [~30 min]
 **Goal**: 500 realistic professional profiles loaded into DB on startup
 
-- [ ] 2.1 Profile generation script
-  - [ ] 2.1.1 scripts/generate_profiles.py — batch generate 500 profiles via Groq
-  - [ ] 2.1.2 20 batches of 25, each batch with diversity hints (industry, seniority mix)
-  - [ ] 2.1.3 Deduplicate by name
-  - [ ] 2.1.4 Write output to data/seed_profiles.json
+- [x] 2.1 Profile generation script
+  - [x] 2.1.1 scripts/generate_profiles.py — batch generate 500 profiles via Groq
+  - [x] 2.1.2 20 batches of 25, each batch with diversity hints (industry, seniority mix)
+  - [x] 2.1.3 Deduplicate by name
+  - [x] 2.1.4 Write output to data/seed_profiles.json
 
-- [ ] 2.2 Seed loading
+- [x] 2.2 Seed loading
   - [x] 2.2.1 Startup hook in main.py: if profiles table empty, load from seed_profiles.json
-  - [ ] 2.2.2 Verify: restart server, check profiles are in DB
+  - [x] 2.2.2 Verify: restart server, check profiles are in DB
 
-- [ ] 2.3 Run the script, generate profiles, commit seed_profiles.json
+- [x] 2.3 Run the script, generate profiles, commit seed_profiles.json
 
 ---
 
