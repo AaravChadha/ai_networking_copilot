@@ -2,22 +2,20 @@
 
 An AI-powered networking copilot that automates the entire professional outreach pipeline — from defining career goals to discovering relevant contacts, generating personalized messages, and managing conversations with AI-driven follow-ups.
 
-Built solo at **Catapult Hacks** (Purdue University) in 36 hours.
-
----
-
-## What It Does
-
-1. **Define your goal** — Tell the AI what you're looking for (internship, mentorship, research collab, etc.) and your background
-2. **Discover contacts** — AI ranks 500 synthetic professionals by relevance to your goal, with match scores and reasons
-3. **Generate outreach** — Pick a template and tone; AI writes personalized messages for each contact using their specific role, skills, and company
-4. **Send and track** — Approve, edit, and send messages with batch controls
-5. **Manage conversations** — AI generates realistic replies, classifies sentiment, and suggests context-aware follow-ups in a WhatsApp-style chat interface
-6. **Dashboard analytics** — Track campaign performance with reply rates, sentiment charts, and per-campaign breakdowns
+Built solo at **Catapult Hacks** (Purdue University) in 36 hours. Budget: **$0** — everything runs on free tiers.
 
 ## Screenshots
 
 <!-- Add screenshots here -->
+
+## What It Does
+
+1. **Define your goal** — Tell the AI what you're looking for (internship, mentorship, research collab, etc.) and your background
+2. **Discover contacts** — AI prefilters 500 professionals down to ~50, then ranks them with match scores and reasons in a single LLM call
+3. **Generate outreach** — Pick from 5 built-in templates (informational interview, job inquiry, research collab, investor outreach, custom), set the tone, and AI writes personalized messages referencing each contact's specific role, skills, and company
+4. **Send and track** — Approve, edit inline, and send messages with batch controls
+5. **Manage conversations** — Multi-round back-and-forth in a WhatsApp-style chat interface with AI-generated replies, sentiment classification (positive/neutral/negative), and context-aware follow-up suggestions that adapt to conversation tone
+6. **Dashboard analytics** — Track campaign performance with reply rates, sentiment doughnut charts, messages-per-campaign bar charts, and per-campaign breakdowns
 
 ## Tech Stack
 
@@ -28,21 +26,6 @@ Built solo at **Catapult Hacks** (Purdue University) in 36 hours.
 | Database | SQLite + SQLAlchemy | Zero config, file-based |
 | LLM | Groq (Llama 3.3 70B) | Free tier, fast inference, JSON mode |
 | Charts | Chart.js | Lightweight, CDN-loaded |
-
-**Budget: $0** — everything runs on free tiers.
-
-## Features
-
-- **Smart matching** — Prefilters 500 profiles down to ~50 candidates, then uses a single LLM call to rank and score them
-- **Template system** — 5 built-in outreach templates (informational interview, job inquiry, research collab, investor outreach, custom) with customizable tone and sections
-- **Personalized generation** — Each message references the recipient's specific role, company, skills, and background
-- **Conversation threads** — Multi-round back-and-forth with AI-generated replies that evolve based on sentiment
-- **Sentiment analysis** — Replies classified as positive/neutral/negative with signal extraction
-- **Context-aware follow-ups** — AI suggests different follow-up strategies based on reply sentiment
-- **WhatsApp-style chat** — Split-layout chat page with thread sidebar and message bubbles
-- **Campaign navigation** — Breadcrumb flow: Contacts -> Templates -> Outreach -> Inbox
-- **Dashboard charts** — Sentiment doughnut chart and messages-per-campaign bar chart
-- **Demo-ready** — Seeds sample data on fresh start so the app is never empty
 
 ## Getting Started
 
@@ -85,33 +68,6 @@ Dashboard → New Campaign → Goal Setup → Contacts (ranked) → Template Edi
 | Reply classification | Classify sentiment + extract key signals | JSON |
 | Follow-up suggestion | Context-aware follow-up based on conversation history | Text |
 | Profile generation | One-time batch generation of 500 synthetic profiles | JSON |
-
-## Project Structure
-
-```
-app/
-├── main.py              # FastAPI app, startup hooks, demo data seeding
-├── config.py            # Settings (API key, DB path)
-├── database.py          # SQLite engine + session
-├── models.py            # 6 SQLAlchemy ORM models
-├── services/
-│   ├── groq_client.py   # Groq SDK wrapper with retry
-│   ├── matching.py      # Prefilter + AI ranking engine
-��   ├── templates.py     # Outreach template CRUD
-│   ├── outreach.py      # Message generation
-│   └── inbox.py         # Replies, classification, follow-ups
-├── routers/
-│   ├── pages.py         # HTML page routes
-│   ├── goals.py         # Goal CRUD + stats API
-│   ├── contacts.py      # Contact search/rank API
-│   ��── messages.py      # Message CRUD, approve, send API
-│   └── inbox.py         # Reply/follow-up API
-└── templates/           # Jinja2 HTML templates
-    ├── base.html        # Layout with Pico CSS + HTMX
-    ├── dashboard.html   # Stats, charts, campaign list
-    ├── chat.html        # Split-layout conversation view
-    └── ...
-```
 
 ## Built By
 
