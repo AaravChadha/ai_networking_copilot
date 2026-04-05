@@ -10,6 +10,10 @@ Built solo at **Catapult Hacks** (Purdue University) in 36 hours. Budget: **$0**
 |-----------|-----------|
 | ![Dashboard](screenshots/dashboard.png) | ![New Campaign](screenshots/chat.png) |
 
+## Demo Video
+
+[Watch the full demo on YouTube](https://youtu.be/bxAB1E-vsnA)
+
 ## What It Does
 
 1. **Define your goal** — Tell the AI what you're looking for (internship, mentorship, research collab, etc.) and your background
