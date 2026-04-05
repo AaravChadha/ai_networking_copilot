@@ -55,7 +55,7 @@
         <div class="campaign-bar-title">{{ goal.description }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
-    <a href="/" style="font-size: 0.8rem;">Back to Dashboard</a>
+    <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
 </div>
 {% set has_sent = messages and (messages | selectattr('status', 'equalto', 'sent') | list | length > 0 or messages | selectattr('status', 'equalto', 'replied') | list | length > 0) %}
 <div class="step-bar">

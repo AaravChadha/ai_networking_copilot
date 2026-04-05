@@ -84,7 +84,7 @@
             top: 0;
             z-index: 100;
             background: #fff;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border);
             box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             padding: 0;
         }
@@ -92,8 +92,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
+            display: flex !important;
+            justify-content: space-between !important;
             align-items: center;
             height: 56px;
         }
@@ -103,24 +103,26 @@
             gap: 0.5rem;
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1a1a2e;
+            color: var(--text-primary);
             text-decoration: none;
+            margin-right: auto;
         }
-        nav.top-nav .brand svg {
-            flex-shrink: 0;
-        }
+        nav.top-nav .brand:hover { color: var(--text-primary); }
+        nav.top-nav .brand svg { flex-shrink: 0; }
         nav.top-nav .nav-links {
             display: flex;
             gap: 0;
             list-style: none;
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
             height: 56px;
             align-items: stretch;
         }
         nav.top-nav .nav-links li {
             display: flex;
             align-items: stretch;
+            padding: 0;
+            margin: 0;
         }
         nav.top-nav .nav-links a {
             display: flex;
@@ -128,12 +130,13 @@
             text-decoration: none;
             padding: 0 1.1rem;
             font-size: 0.9rem;
-            color: #6b7280;
+            color: var(--text-secondary);
             border-bottom: 2px solid transparent;
+            padding-bottom: 2px;
             transition: all 0.15s ease;
         }
         nav.top-nav .nav-links a:hover {
-            color: #111;
+            color: var(--text-primary);
             border-bottom-color: #d1d5db;
         }
         nav.top-nav .nav-links a.active {
@@ -161,6 +164,7 @@
             font-weight: 600;
             font-size: 0.95rem;
             color: var(--text-primary);
+            text-transform: capitalize;
         }
         .campaign-bar-type {
             font-size: 0.8rem;
@@ -280,10 +284,11 @@
     <nav class="top-nav">
         <div class="nav-inner">
             <a href="/" class="brand">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4f46e5;">
-                    <circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/>
-                    <line x1="5" y1="8" x2="12" y2="16"/><line x1="19" y1="8" x2="12" y2="16"/>
-                    <line x1="5" y1="6" x2="19" y2="6"/>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--brand-color);">
+                    <circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><circle cx="6" cy="18" r="2.5"/>
+                    <line x1="8.5" y1="6" x2="15.5" y2="6"/><line x1="18" y1="8.5" x2="18" y2="15.5"/>
+                    <line x1="8.5" y1="18" x2="15.5" y2="18"/><line x1="6" y1="8.5" x2="6" y2="15.5"/>
+                    <line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/>
                 </svg>
                 AI Networking Copilot
             </a>
