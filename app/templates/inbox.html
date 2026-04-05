@@ -9,10 +9,10 @@
         flex-direction: column;
         gap: 0;
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        box-shadow: var(--shadow-sm);
     }
     .inbox-row {
         display: flex;
@@ -22,20 +22,21 @@
         text-decoration: none;
         color: inherit;
         border-bottom: 1px solid #f0f1f3;
-        transition: background 0.1s ease;
-        border-left: 3px solid transparent;
+        transition: background 0.15s ease;
+        border-left: 4px solid transparent;
     }
     .inbox-row:last-child { border-bottom: none; }
-    .inbox-row:hover { background: #f8f9fb; }
+    .inbox-row:hover { background: #f0f4ff; }
     .inbox-row.sentiment-positive { border-left-color: #22c55e; }
     .inbox-row.sentiment-neutral { border-left-color: #f59e0b; }
     .inbox-row.sentiment-negative { border-left-color: #ef4444; }
     .inbox-row .unread-dot {
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
-        background: #3b82f6;
+        background: #8b5cf6;
         flex-shrink: 0;
+        box-shadow: 0 0 0 2px rgba(139,92,246,0.2);
     }
     .filter-btn {
         display: inline-flex;
@@ -50,12 +51,15 @@
         transition: all 0.15s ease;
         text-decoration: none;
     }
-    .filter-btn:hover { opacity: 0.8; }
-    .filter-btn.active-filter { border-color: currentColor; }
-    .filter-positive { background: #dcfce7; color: #166534; }
-    .filter-neutral { background: #fef9c3; color: #854d0e; }
-    .filter-negative { background: #fee2e2; color: #991b1b; }
+    .filter-btn:hover { opacity: 0.85; }
     .filter-all { background: #f3f4f6; color: #374151; }
+    .filter-positive { background: #f0fdf4; color: #166534; }
+    .filter-neutral { background: #fefce8; color: #854d0e; }
+    .filter-negative { background: #fef2f2; color: #991b1b; }
+    .filter-btn.active-filter.filter-all { background: #374151; color: #fff; }
+    .filter-btn.active-filter.filter-positive { background: #22c55e; color: #fff; }
+    .filter-btn.active-filter.filter-neutral { background: #f59e0b; color: #fff; }
+    .filter-btn.active-filter.filter-negative { background: #ef4444; color: #fff; }
 </style>
 {% endblock %}
 
@@ -86,15 +90,13 @@
 {% endblock %}
 
 {% block content %}
-<div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-    {% if goal %}
-    <a href="/goals/{{ goal.id }}/outreach" style="font-size: 0.85rem; text-decoration: none; color: #6b7280;">&larr; Outreach</a>
-    <span style="opacity: 0.3;">|</span>
-    {% endif %}
-    <div>
-        <h2 style="margin: 0;">{% if goal %}Inbox{% else %}All Conversations{% endif %}</h2>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">{% if goal %}Replies and follow-ups for this campaign{% else %}All replies across your campaigns{% endif %}</p>
-    </div>
+{% if goal %}
+<a href="/goals/{{ goal.id }}/outreach" style="font-size: 0.85rem; text-decoration: none; color: var(--text-muted); display: inline-block; margin-bottom: 0.5rem;">&larr; Back to Outreach</a>
+{% endif %}
+
+<div class="page-header">
+    <h2>{% if goal %}Inbox{% else %}All Conversations{% endif %}</h2>
+    <p>{% if goal %}Replies and follow-ups for this campaign{% else %}All replies across your campaigns{% endif %}</p>
 </div>
 
 {% if threads %}
@@ -103,7 +105,7 @@
 {% set neu_count = threads | selectattr('sentiment', 'equalto', 'neutral') | list | length %}
 {% set neg_count = threads | selectattr('sentiment', 'equalto', 'negative') | list | length %}
 <div style="margin-bottom: 1rem; display: flex; gap: 0.4rem; align-items: center;">
-    <span style="font-size: 0.85rem; color: #6b7280; margin-right: 0.25rem;">{{ threads | length }} conversations</span>
+    <span style="font-size: 0.85rem; color: var(--text-muted); margin-right: 0.25rem;">{{ threads | length }} conversations</span>
     <button class="filter-btn filter-all active-filter" onclick="filterThreads('all', this)">All</button>
     {% if pos_count > 0 %}
     <button class="filter-btn filter-positive" onclick="filterThreads('positive', this)">{{ pos_count }} positive</button>
@@ -125,25 +127,25 @@
         {% if thread.has_pending %}
         <div class="unread-dot" title="Needs response"></div>
         {% else %}
-        <div style="width: 8px; flex-shrink: 0;"></div>
+        <div style="width: 9px; flex-shrink: 0;"></div>
         {% endif %}
         <div style="flex: 1; min-width: 0;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
                 <span style="font-size: 0.95rem; {{ 'font-weight: 700;' if thread.has_pending else 'font-weight: 500;' }}">{{ thread.message.profile.name }}</span>
-                <span style="font-size: 0.8rem; color: #9ca3af;">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
             </div>
-            <p style="margin: 0; font-size: 0.85rem; color: #6b7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 {{ thread.last_preview }}
             </p>
         </div>
         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; flex-shrink: 0;">
-            <span style="font-size: 0.75rem; color: #9ca3af;">
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
                 {% if thread.last_reply_at %}
                 {{ thread.last_reply_at.strftime('%b %d') }}
                 {% endif %}
             </span>
             <div style="display: flex; align-items: center; gap: 0.35rem;">
-                <span style="font-size: 0.75rem; color: #9ca3af;">{{ thread.reply_count }} msg{{ 's' if thread.reply_count != 1 }}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ thread.reply_count }} msg{{ 's' if thread.reply_count != 1 }}</span>
                 {% if thread.is_concluded %}
                 <span class="badge" style="background: #f3f4f6; color: #6b7280; font-size: 0.65rem; padding: 0.1rem 0.4rem;">Done</span>
                 {% endif %}

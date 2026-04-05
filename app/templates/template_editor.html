@@ -6,16 +6,16 @@
 <style>
     .template-controls {
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         padding: 1.25rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        box-shadow: var(--shadow-sm);
         margin-bottom: 1.5rem;
     }
     .section-card {
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         margin-bottom: 0.75rem;
         overflow: hidden;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -25,36 +25,58 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 0.5rem;
         font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
         user-select: none;
+        list-style: none;
     }
+    .section-card summary::-webkit-details-marker { display: none; }
     .section-card summary:hover { background: #f9fafb; }
-    .section-card summary::after {
-        content: 'Edit';
-        font-size: 0.75rem;
-        color: #4f46e5;
-        font-weight: 500;
+    .section-card summary .chevron {
+        margin-left: auto;
+        transition: transform 0.15s ease;
+        color: var(--text-muted);
+        flex-shrink: 0;
     }
-    .section-card[open] summary::after { content: 'Collapse'; }
+    .section-card[open] summary .chevron { transform: rotate(180deg); }
     .section-card[open] summary { border-bottom: 1px solid #f0f1f3; }
+    .section-card .section-body {
+        padding: 0.75rem 1rem;
+    }
     .section-card textarea {
-        border: none;
-        border-radius: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
         margin: 0;
         resize: none;
         font-size: 0.85rem;
-        padding: 0.75rem 1rem;
+        padding: 0.6rem 0.75rem;
         min-height: 60px;
         overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .section-card textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+        outline: none;
+    }
+    .section-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
     }
     .preview-box {
         display: none;
         background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        box-shadow: var(--shadow-sm);
         margin-bottom: 1.5rem;
     }
     .preview-box.show { display: block; }
@@ -62,7 +84,7 @@
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #6b7280;
+        color: var(--text-muted);
         margin-bottom: 0.35rem;
     }
     .preview-section {
@@ -143,14 +165,14 @@
         <h3 style="margin: 0;">Message Blueprint</h3>
         <span title="These are instructions the AI follows to write each section. Each message will be unique and personalized to the recipient." style="cursor: help; width: 20px; height: 20px; border-radius: 50%; background: #e5e7eb; color: #6b7280; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">i</span>
         <span style="flex: 1;"></span>
-        <button type="button" class="outline secondary" style="margin: 0; font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="togglePreview()">Preview Example</button>
+        <button type="button" class="outline secondary" style="margin: 0; font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="togglePreview()" id="preview-toggle-btn">Preview Example</button>
     </div>
 
     {# Preview box #}
     <div class="preview-box" id="preview-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <strong style="font-size: 0.9rem;">Example Message Preview</strong>
-            <small style="opacity: 0.5;">AI will personalize for each contact</small>
+            <small style="color: var(--text-muted);">AI will personalize for each contact</small>
         </div>
         <div class="preview-section">
             <div class="preview-label">Introduction</div>
@@ -170,25 +192,61 @@
         </div>
     </div>
 
-    {# Sections as collapsed accordion #}
+    {# Sections as accordion with chevrons #}
     <details class="section-card">
-        <summary><strong>Introduction</strong></summary>
-        <textarea id="preview-intro" name="intro_override" rows="2" oninput="autoResize(this)"></textarea>
+        <summary>
+            Introduction
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="section-body">
+            <textarea id="preview-intro" name="intro_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
+            <div class="section-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit to customize how the AI writes this section
+            </div>
+        </div>
     </details>
 
     <details class="section-card">
-        <summary><strong>Context / Your Story</strong></summary>
-        <textarea id="preview-context" name="context_override" rows="2" oninput="autoResize(this)"></textarea>
+        <summary>
+            Context / Your Story
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="section-body">
+            <textarea id="preview-context" name="context_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
+            <div class="section-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit to customize how the AI writes this section
+            </div>
+        </div>
     </details>
 
     <details class="section-card">
-        <summary><strong>The Ask</strong></summary>
-        <textarea id="preview-ask" name="ask_override" rows="2" oninput="autoResize(this)"></textarea>
+        <summary>
+            The Ask
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="section-body">
+            <textarea id="preview-ask" name="ask_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
+            <div class="section-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit to customize how the AI writes this section
+            </div>
+        </div>
     </details>
 
     <details class="section-card">
-        <summary><strong>Closing</strong></summary>
-        <textarea id="preview-closing" name="closing_override" rows="2" oninput="autoResize(this)"></textarea>
+        <summary>
+            Closing
+            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="section-body">
+            <textarea id="preview-closing" name="closing_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
+            <div class="section-hint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit to customize how the AI writes this section
+            </div>
+        </div>
     </details>
 
     <button type="submit" id="generate-btn" style="margin-top: 1rem;">Generate Messages</button>
@@ -221,13 +279,15 @@ function updatePreviewBox() {
 
 function togglePreview() {
     updatePreviewBox();
-    document.getElementById('preview-box').classList.toggle('show');
+    const box = document.getElementById('preview-box');
+    const btn = document.getElementById('preview-toggle-btn');
+    box.classList.toggle('show');
+    btn.textContent = box.classList.contains('show') ? 'Hide Preview' : 'Preview Example';
 }
 
 function autoResize(el) {
     el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-    updatePreviewBox();
+    el.style.height = Math.max(el.scrollHeight, 60) + 'px';
 }
 
 select.addEventListener('change', updatePreview);
@@ -238,7 +298,7 @@ document.querySelectorAll('.section-card').forEach(d => {
     d.addEventListener('toggle', function() {
         if (this.open) {
             const ta = this.querySelector('textarea');
-            if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+            if (ta) { ta.style.height = 'auto'; ta.style.height = Math.max(ta.scrollHeight, 60) + 'px'; }
         }
     });
 });

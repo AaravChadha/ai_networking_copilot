@@ -9,14 +9,14 @@
         grid-template-columns: 300px 1fr;
         gap: 0;
         height: calc(100vh - 140px);
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--border);
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         background: #fff;
     }
     .chat-sidebar {
-        border-right: 1px solid #e5e7eb;
+        border-right: 1px solid var(--border);
         overflow-y: auto;
         background: #fafbfc;
     }
@@ -31,11 +31,11 @@
         transition: background 0.15s ease;
     }
     .chat-sidebar a:hover {
-        background: #f0f4ff;
+        background: #eef0f4;
     }
     .chat-sidebar a.active-thread {
         background: #c7d2fe;
-        border-left: 3px solid #4f46e5;
+        border-left: 3px solid var(--primary);
     }
     .sidebar-avatar {
         width: 36px;
@@ -57,7 +57,7 @@
     }
     .chat-header {
         padding: 1rem 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -67,10 +67,22 @@
         font-size: 1.05rem;
         font-weight: 700;
     }
+    .chat-header-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.15rem;
+    }
     .chat-header-role {
         font-size: 0.8rem;
-        opacity: 0.5;
-        margin-top: 0.15rem;
+        color: var(--text-muted);
+    }
+    .chat-header-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: #f3f4f6;
+        padding: 0.1rem 0.5rem;
+        border-radius: 1rem;
     }
     .chat-messages {
         flex: 1;
@@ -93,18 +105,19 @@
     }
     .bubble-them {
         align-self: flex-start;
-        background: #f3f4f6;
+        background: #fff;
         color: #1f2937;
+        border: 1px solid #e5e7eb;
         border-bottom-left-radius: 4px;
     }
     .bubble-you {
         align-self: flex-end;
-        background: #dbeafe;
-        color: #1e3a5f;
+        background: #3b82f6;
+        color: #fff;
         border-bottom-right-radius: 4px;
     }
     .chat-footer {
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid var(--border);
         padding: 1rem 1.5rem;
         flex-shrink: 0;
         background: #fff;
@@ -136,18 +149,20 @@
     }
     .regen-btn {
         background: none;
-        border: none;
+        border: 1px solid #d8b4fe;
         color: #6d28d9;
         font-size: 0.8rem;
         cursor: pointer;
-        padding: 0.2rem 0.5rem;
+        padding: 0.3rem 0.65rem;
         border-radius: 6px;
         display: flex;
         align-items: center;
         gap: 0.3rem;
         margin: 0 !important;
+        font-weight: 500;
+        transition: all 0.15s ease;
     }
-    .regen-btn:hover { background: #ede9fe; }
+    .regen-btn:hover { background: #ede9fe; border-color: #c084fc; }
     .chat-input-row {
         display: flex;
         gap: 0.5rem;
@@ -165,20 +180,22 @@
     .skip-link {
         background: none;
         border: none;
-        color: #6b7280;
+        color: #b91c1c;
+        opacity: 0.6;
         font-size: 0.85rem;
         cursor: pointer;
         padding: 0;
         margin: 0 !important;
         text-decoration: underline;
+        transition: opacity 0.15s ease;
     }
-    .skip-link:hover { color: #374151; }
+    .skip-link:hover { opacity: 1; }
 </style>
 {% endblock %}
 
 {% block content %}
-<nav style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-    <a href="/goals/{{ goal.id }}/inbox" style="font-size: 0.85rem; text-decoration: none; color: #6b7280;">&larr; Back to Inbox</a>
+<nav style="margin-bottom: 1rem;">
+    <a href="/goals/{{ goal.id }}/inbox" style="font-size: 0.85rem; text-decoration: none; color: var(--text-muted);">&larr; Back to Inbox</a>
 </nav>
 
 <div class="chat-layout">
@@ -195,7 +212,7 @@
                     <strong style="font-size: 0.85rem;">{{ thread.message.profile.name }}</strong>
                     <span class="badge badge-{{ thread.sentiment }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">{{ thread.sentiment | capitalize }}</span>
                 </div>
-                <p style="margin: 0; font-size: 0.75rem; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     {{ thread.last_preview }}
                 </p>
             </div>
@@ -209,7 +226,10 @@
         <div class="chat-header">
             <div>
                 <div class="chat-header-name">{{ active_thread.message.profile.name }}</div>
-                <div class="chat-header-role">{{ active_thread.message.profile.role }} at {{ active_thread.message.profile.company }}</div>
+                <div class="chat-header-meta">
+                    <span class="chat-header-role">{{ active_thread.message.profile.role }} at {{ active_thread.message.profile.company }}</span>
+                    <span class="chat-header-count">{{ active_thread.replies | length + 1 }} message{{ 's' if active_thread.replies | length > 0 }}</span>
+                </div>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
                 {% if active_thread.is_concluded %}
@@ -240,7 +260,7 @@
                     </div>
                     <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/regenerate" style="margin: 0;">
                         <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
-                        <button type="submit" class="regen-btn" onclick="this.innerHTML='Regenerating...';">&#8635; Regenerate</button>
+                        <button type="submit" class="regen-btn" onclick="this.innerHTML='&#8635; Regenerating...';">&#8635; Regenerate</button>
                     </form>
                 </div>
                 <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/follow-up">
