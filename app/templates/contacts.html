@@ -68,12 +68,14 @@
         white-space: nowrap;
     }
     .reason-text {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: #6b7280;
-        max-width: 320px;
+        max-width: 350px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        line-height: 1.4;
         cursor: help;
     }
     .sticky-footer {
@@ -179,9 +181,11 @@
                         {% endfor %}
                     </div>
                 </td>
+                {% set clean = c.reason.replace(c.profile.name + ' is a good match because ', '').replace(c.profile.name + ' is a strong match because ', '').replace(c.profile.name + ' is an excellent match because ', '').replace(c.profile.name + ' is a great match because ', '').replace(c.profile.name + ' is a solid match because ', '') %}
+                {% set clean = clean.replace('she works as ', '').replace('he works as ', '').replace('they work as ', '').replace('She works as ', '').replace('He works as ', '').replace('They work as ', '').replace('she is ', '').replace('he is ', '').replace('She is ', '').replace('He is ', '') %}
+                {% set clean = clean[:1] | upper ~ clean[1:] %}
                 <td>
-                    {% set skills_str = c.profile.get_skills()[:3] | join(', ') %}
-                    <div class="reason-text" title="{{ c.reason }}">{{ c.profile.role }} at {{ c.profile.company }}{% if skills_str %} — {{ skills_str }}{% endif %}</div>
+                    <div class="reason-text" title="{{ c.reason }}">{{ clean }}</div>
                 </td>
             </tr>
             {% endfor %}
