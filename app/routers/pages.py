@@ -28,7 +28,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         .all()
     ) if msg_ids else []
     total_replies = len({r.message_id for r in all_inbound})
-    total_reply_rate = round(total_replies / total_sent * 100, 1) if total_sent > 0 else 0
+    total_reply_rate = round(total_replies / total_sent * 100) if total_sent > 0 else 0
     total_pending = sum(1 for r in all_inbound if r.follow_up_status == "pending")
 
     # Per-goal stats
@@ -49,7 +49,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             "sent_only": sent_only,
             "replied": replied,
             "replies": replies,
-            "reply_rate": round(replies / sent * 100, 1) if sent > 0 else 0,
+            "reply_rate": round(replies / sent * 100) if sent > 0 else 0,
             "positive": sum(1 for r in inbound if r.sentiment == "positive"),
             "neutral": sum(1 for r in inbound if r.sentiment == "neutral"),
             "negative": sum(1 for r in inbound if r.sentiment == "negative"),

@@ -4,7 +4,6 @@
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel-v3@1.1.2/dist/chartjs-plugin-doughnutlabel-v3.min.js"></script>
 <style>
     .stat-card-accent {
         text-align: center;
@@ -18,13 +17,13 @@
         top: 0; left: 0; right: 0;
         height: 3px;
     }
-    .stat-card-accent.accent-indigo::before { background: #4f46e5; }
     .stat-card-accent.accent-blue::before { background: #3b82f6; }
     .stat-card-accent.accent-green::before { background: #22c55e; }
     .stat-card-accent.accent-amber::before { background: #f59e0b; }
     .stat-card-accent .stat-icon {
-        font-size: 1.4rem;
         margin-bottom: 0.35rem;
+        display: flex;
+        justify-content: center;
     }
     .stat-card-accent h2 {
         margin: 0 0 0.15rem;
@@ -33,11 +32,11 @@
     .stat-card-accent p {
         margin: 0;
         font-size: 0.85rem;
-        opacity: 0.6;
+        color: var(--text-secondary);
     }
     .stat-card-accent .stat-sub {
         font-size: 0.75rem;
-        opacity: 0.5;
+        color: var(--text-muted);
         margin-top: 0.2rem;
     }
     a.stat-card-link {
@@ -46,7 +45,7 @@
         display: block;
     }
     a.stat-card-link:hover article {
-        border-color: #4f46e5;
+        border-color: var(--primary);
         box-shadow: 0 2px 8px rgba(79,70,229,0.12);
     }
     .chart-card {
@@ -55,6 +54,31 @@
         border-radius: 10px;
         padding: 1.25rem;
         box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .msg-breakdown {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem 0;
+    }
+    .msg-breakdown-item {
+        text-align: center;
+    }
+    .msg-breakdown-item .num {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    .msg-breakdown-item .label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    .msg-breakdown-item .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.3rem;
+        vertical-align: middle;
     }
 </style>
 {% endblock %}
@@ -66,27 +90,35 @@
 </div>
 
 {% if goals %}
-{# Stat cards with icons and accent borders #}
+{# Stat cards with SVG icons and semantic accent borders #}
 <div class="stats-grid" style="margin-bottom: 2rem;">
-    <article class="stat-card-accent accent-indigo">
-        <div class="stat-icon">📊</div>
+    <article class="stat-card-accent accent-blue">
+        <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        </div>
         <h2>{{ goals | length }}</h2>
         <p>Campaigns</p>
     </article>
     <article class="stat-card-accent accent-blue">
-        <div class="stat-icon">✉️</div>
+        <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
         <h2>{{ total_sent }}</h2>
         <p>Messages Sent</p>
     </article>
     <article class="stat-card-accent accent-green">
-        <div class="stat-icon">💬</div>
+        <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
         <h2>{{ total_replies }}</h2>
         <p>Replies</p>
         <div class="stat-sub">{{ total_reply_rate }}% reply rate</div>
     </article>
     <a href="/inbox" class="stat-card-link">
         <article class="stat-card-accent accent-amber">
-            <div class="stat-icon">⏳</div>
+            <div class="stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
             <h2>{{ total_pending }}</h2>
             <p>Pending Follow-ups</p>
             <div class="stat-sub">Click to view</div>
@@ -126,11 +158,20 @@
             </div>
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Messages</h4>
-                {% if all_pending > 0 or all_sent_only > 0 or all_replied > 0 %}
-                <canvas id="barChart-all" style="max-height: 250px;"></canvas>
-                {% else %}
-                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No messages yet</p>
-                {% endif %}
+                <div class="msg-breakdown">
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #f59e0b;">{{ all_pending }}</div>
+                        <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
+                    </div>
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #3b82f6;">{{ all_sent_only }}</div>
+                        <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
+                    </div>
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #22c55e;">{{ all_replied }}</div>
+                        <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -150,11 +191,20 @@
             </div>
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Messages</h4>
-                {% if s.pending > 0 or s.sent_only > 0 or s.replied > 0 %}
-                <canvas id="barChart-{{ g.id }}" style="max-height: 250px;"></canvas>
-                {% else %}
-                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No messages yet</p>
-                {% endif %}
+                <div class="msg-breakdown">
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #f59e0b;">{{ s.pending }}</div>
+                        <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
+                    </div>
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #3b82f6;">{{ s.sent_only }}</div>
+                        <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
+                    </div>
+                    <div class="msg-breakdown-item">
+                        <div class="num" style="color: #22c55e;">{{ s.replied }}</div>
+                        <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
+                    </div>
+                </div>
             </div>
         </div>
         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
@@ -200,7 +250,6 @@ function makeDoughnutOpts(centerText) {
 
 {# All campaigns combined charts #}
 {% if all_total_replies > 0 %}
-{% set dominant = 'Mostly Positive' if all_pos >= all_neu and all_pos >= all_neg else ('Mostly Neutral' if all_neu >= all_neg else 'Mostly Negative') %}
 new Chart(document.getElementById('sentimentChart-all'), {
     type: 'doughnut',
     data: {
@@ -215,31 +264,12 @@ new Chart(document.getElementById('sentimentChart-all'), {
     options: makeDoughnutOpts('{{ all_total_replies }} replies')
 });
 {% endif %}
-{% if all_pending > 0 or all_sent_only > 0 or all_replied > 0 %}
-new Chart(document.getElementById('barChart-all'), {
-    type: 'bar',
-    data: {
-        labels: [{% if all_pending > 0 %}'Pending',{% endif %}{% if all_sent_only > 0 %}'Sent',{% endif %}{% if all_replied > 0 %}'Replied',{% endif %}],
-        datasets: [{
-            data: [{% if all_pending > 0 %}{{ all_pending }},{% endif %}{% if all_sent_only > 0 %}{{ all_sent_only }},{% endif %}{% if all_replied > 0 %}{{ all_replied }},{% endif %}],
-            backgroundColor: [{% if all_pending > 0 %}'#f59e0b',{% endif %}{% if all_sent_only > 0 %}'#3b82f6',{% endif %}{% if all_replied > 0 %}'#22c55e',{% endif %}],
-            borderRadius: 6
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
-});
-{% endif %}
 
 {# Per-campaign charts #}
 {% for g in goals %}
 {% set s = goal_stats[g.id] %}
 {% set g_total = s.positive + s.neutral + s.negative %}
 {% if g_total > 0 %}
-{% set g_dominant = 'Mostly Positive' if s.positive >= s.neutral and s.positive >= s.negative else ('Mostly Neutral' if s.neutral >= s.negative else 'Mostly Negative') %}
 new Chart(document.getElementById('sentimentChart-{{ g.id }}'), {
     type: 'doughnut',
     data: {
@@ -252,24 +282,6 @@ new Chart(document.getElementById('sentimentChart-{{ g.id }}'), {
         }]
     },
     options: makeDoughnutOpts('{{ g_total }} replies')
-});
-{% endif %}
-{% if s.pending > 0 or s.sent_only > 0 or s.replied > 0 %}
-new Chart(document.getElementById('barChart-{{ g.id }}'), {
-    type: 'bar',
-    data: {
-        labels: [{% if s.pending > 0 %}'Pending',{% endif %}{% if s.sent_only > 0 %}'Sent',{% endif %}{% if s.replied > 0 %}'Replied',{% endif %}],
-        datasets: [{
-            data: [{% if s.pending > 0 %}{{ s.pending }},{% endif %}{% if s.sent_only > 0 %}{{ s.sent_only }},{% endif %}{% if s.replied > 0 %}{{ s.replied }},{% endif %}],
-            backgroundColor: [{% if s.pending > 0 %}'#f59e0b',{% endif %}{% if s.sent_only > 0 %}'#3b82f6',{% endif %}{% if s.replied > 0 %}'#22c55e',{% endif %}],
-            borderRadius: 6
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
 });
 {% endif %}
 {% endfor %}
@@ -286,8 +298,8 @@ function switchCampaign(id) {
 <article style="margin-bottom: 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <div>
-            <strong style="font-size: 1.05rem; text-transform: capitalize;">{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
-            <br><small style="opacity: 0.5;">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
+            <strong style="font-size: 1.05rem;">{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
+            <br><small style="color: var(--text-muted);">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
         </div>
         <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #166534;">
             <span style="width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
@@ -299,9 +311,9 @@ function switchCampaign(id) {
         <span style="opacity: 0.3;">·</span>
         <span style="font-size: 0.85rem;"><strong>{{ stats.replies }}</strong> replies ({{ stats.reply_rate }}%)</span>
         <span style="opacity: 0.3;">·</span>
-        <span class="badge badge-positive" style="font-size: 0.7rem;">{{ stats.positive }} pos</span>
-        <span class="badge badge-neutral" style="font-size: 0.7rem;">{{ stats.neutral }} neu</span>
-        <span class="badge badge-negative" style="font-size: 0.7rem;">{{ stats.negative }} neg</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>{{ stats.positive }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>{{ stats.neutral }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>{{ stats.negative }}</span>
     </div>
     <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-bottom: 0;">View Campaign</a>
@@ -319,26 +331,34 @@ function switchCampaign(id) {
 
 {% else %}
 <article style="text-align: center; padding: 4rem 2rem;">
-    <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+    <div style="margin-bottom: 1rem;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </div>
     <h2 style="margin-bottom: 0.5rem;">Start your first networking campaign</h2>
-    <p style="opacity: 0.6; max-width: 480px; margin: 0 auto 2rem;">Find the right people, generate personalized outreach, and manage replies — all in one place.</p>
+    <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 2rem;">Find the right people, generate personalized outreach, and manage replies — all in one place.</p>
     <a href="/goals/new" role="button" class="btn-primary" style="display: inline-block;">New Campaign</a>
 
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
         <div>
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+            <div style="margin-bottom: 0.5rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            </div>
             <strong style="font-size: 0.9rem;">Define your goal</strong>
-            <p style="font-size: 0.8rem; opacity: 0.5; margin: 0.25rem 0 0;">Set your target roles and companies</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0;">Set your target roles and companies</p>
         </div>
         <div>
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">✍️</div>
+            <div style="margin-bottom: 0.5rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
             <strong style="font-size: 0.9rem;">Generate outreach</strong>
-            <p style="font-size: 0.8rem; opacity: 0.5; margin: 0.25rem 0 0;">AI writes personalized messages</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0;">AI writes personalized messages</p>
         </div>
         <div>
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬</div>
+            <div style="margin-bottom: 0.5rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
             <strong style="font-size: 0.9rem;">Start conversations</strong>
-            <p style="font-size: 0.8rem; opacity: 0.5; margin: 0.25rem 0 0;">Manage replies and follow-ups</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0;">Manage replies and follow-ups</p>
         </div>
     </div>
 </article>
