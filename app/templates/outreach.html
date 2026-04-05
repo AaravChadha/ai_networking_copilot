@@ -52,10 +52,9 @@
 {% block campaign_context %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
+        <div class="campaign-bar-title">{{ goal.display_title }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
-    <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
 </div>
 {% set has_sent = messages and (messages | selectattr('status', 'equalto', 'sent') | list | length > 0 or messages | selectattr('status', 'equalto', 'replied') | list | length > 0) %}
 <div class="step-bar">

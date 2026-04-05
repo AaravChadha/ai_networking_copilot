@@ -12,10 +12,40 @@ from app.models import Goal, Message, Profile, Reply, SendConfig
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_tables()
+    _migrate_goal_title()
     seed_profiles()
     seed_templates()
     seed_demo_data()
     yield
+
+
+def _migrate_goal_title():
+    """Add title column if missing, backfill empty titles."""
+    from sqlalchemy import text, inspect
+    db = SessionLocal()
+    try:
+        inspector = inspect(db.bind)
+        cols = [c["name"] for c in inspector.get_columns("goals")]
+        if "title" not in cols:
+            db.execute(text("ALTER TABLE goals ADD COLUMN title VARCHAR DEFAULT ''"))
+            db.commit()
+        # Backfill goals with no title
+        goals = db.query(Goal).filter((Goal.title == None) | (Goal.title == "")).all()
+        if goals:
+            from app.services.groq_client import chat
+            for g in goals:
+                try:
+                    t = chat(
+                        "Generate a short 3-5 word campaign title from the user's networking goal. Return ONLY the title, nothing else. Capitalize it like a proper title.",
+                        f"Goal type: {g.goal_type}\nDescription: {g.description}",
+                        temperature=0.3,
+                    ).strip().strip('"').strip("'")
+                    g.title = t
+                except Exception:
+                    g.title = g.description[:50]
+            db.commit()
+    finally:
+        db.close()
 
 
 def seed_profiles():

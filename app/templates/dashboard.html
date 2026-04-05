@@ -160,7 +160,7 @@
         <select id="campaignSelect" onchange="switchCampaign(this.value)" style="width: auto; margin: 0; padding: 0.4rem 0.75rem;">
             <option value="all" selected>All Campaigns</option>
             {% for g in goals | reverse %}
-            <option value="{{ g.id }}">{{ g.description[:1] | upper }}{{ g.description[1:40] }}{% if g.description|length > 40 %}...{% endif %}</option>
+            <option value="{{ g.id }}">{{ g.display_title }}</option>
             {% endfor %}
         </select>
     </div>
@@ -171,7 +171,7 @@
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Sentiment</h4>
                 {% if all_total_replies > 0 %}
-                <canvas id="sentimentChart-all" style="max-height: 250px;"></canvas>
+                <canvas id="sentimentChart-all" style="max-height: 320px;"></canvas>
                 {% else %}
                 <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
                 {% endif %}
@@ -221,7 +221,7 @@
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Sentiment</h4>
                 {% if g_total > 0 %}
-                <canvas id="sentimentChart-{{ g.id }}" style="max-height: 250px;"></canvas>
+                <canvas id="sentimentChart-{{ g.id }}" style="max-height: 320px;"></canvas>
                 {% else %}
                 <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
                 {% endif %}
@@ -352,7 +352,7 @@ function switchCampaign(id) {
 <article style="margin-bottom: 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <div>
-            <strong style="font-size: 1.05rem;">{{ goal.description[:1] | upper }}{{ goal.description[1:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
+            <strong style="font-size: 1.05rem;">{{ goal.display_title }}</strong>
             <br><small style="color: var(--text-muted);">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
         </div>
         <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #166534;">

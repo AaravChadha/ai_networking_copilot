@@ -56,6 +56,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         }
 
     # Recent activity — latest inbound replies with profile info (all + per-goal)
+    from datetime import datetime
+    now = datetime.utcnow()
     recent_activity = []
     goal_activity = {}
     if msg_ids:
@@ -68,18 +70,19 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         for r in recent_replies:
             msg = next((m for m in all_messages if m.id == r.message_id), None)
             if msg and msg.profile:
+                display_date = min(r.reply_at, now) if r.reply_at else now
                 entry = {
                     "name": msg.profile.name,
                     "sentiment": r.sentiment,
-                    "date": r.reply_at,
+                    "date": display_date,
                     "goal_id": msg.goal_id,
                     "message_id": msg.id,
                 }
-                if len(recent_activity) < 5:
+                if len(recent_activity) < 3:
                     recent_activity.append(entry)
                 if msg.goal_id not in goal_activity:
                     goal_activity[msg.goal_id] = []
-                if len(goal_activity[msg.goal_id]) < 5:
+                if len(goal_activity[msg.goal_id]) < 3:
                     goal_activity[msg.goal_id].append(entry)
 
     return templates.TemplateResponse(request, "dashboard.html", {
@@ -113,8 +116,20 @@ async def create_goal_form(
     roles = [r.strip() for r in target_roles.split(",") if r.strip()]
     companies = [c.strip() for c in target_companies.split(",") if c.strip()]
 
+    # Generate a short campaign title via AI
+    from app.services.groq_client import chat
+    try:
+        title = chat(
+            "Generate a short 3-5 word campaign title from the user's networking goal. Return ONLY the title, nothing else. Capitalize it like a proper title.",
+            f"Goal type: {goal_type}\nDescription: {description}",
+            temperature=0.3,
+        ).strip().strip('"').strip("'")
+    except Exception:
+        title = description[:50]
+
     goal = Goal(
         goal_type=goal_type,
+        title=title,
         description=description,
         user_background=user_background,
         target_roles=json.dumps(roles),

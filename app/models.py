@@ -33,6 +33,7 @@ class Goal(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     goal_type = Column(String, nullable=False)
+    title = Column(String, default="")
     description = Column(Text, nullable=False)
     user_background = Column(Text, default="")
     target_roles = Column(Text, default="[]")  # JSON array
@@ -42,6 +43,10 @@ class Goal(Base):
 
     messages = relationship("Message", back_populates="goal")
     send_config = relationship("SendConfig", back_populates="goal", uselist=False)
+
+    @property
+    def display_title(self) -> str:
+        return self.title if self.title else (self.description[:50] if self.description else "Untitled Campaign")
 
     def get_target_roles(self) -> list[str]:
         return json.loads(self.target_roles)

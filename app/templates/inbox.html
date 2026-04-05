@@ -70,10 +70,9 @@
 {% if goal %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
+        <div class="campaign-bar-title">{{ goal.display_title }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
-    <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
 </div>
 <div class="step-bar">
     <a href="/goals/{{ goal.id }}/contacts" class="step-item completed">
