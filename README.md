@@ -6,9 +6,9 @@ Built solo at **Catapult Hacks** (Purdue University) in 36 hours. Budget: **$0**
 
 ## Screenshots
 
-| Dashboard | Chat View |
+| Dashboard | New Campaign |
 |-----------|-----------|
-| ![Dashboard](screenshots/dashboard.png) | ![Chat](screenshots/chat.png) |
+| ![Dashboard](screenshots/dashboard.png) | ![New Campaign](screenshots/chat.png) |
 
 ## What It Does
 
