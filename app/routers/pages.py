@@ -244,6 +244,8 @@ def _build_threads(db: Session, goal_id: int = None) -> list[dict]:
         # Last message in the thread (inbound or outbound)
         last_reply = replies[-1] if replies else None
         last_preview = (last_reply.body[:80] + "...") if last_reply and len(last_reply.body) > 80 else (last_reply.body if last_reply else "")
+        last_reply_at = last_reply.reply_at if last_reply else message.sent_at
+        has_pending = latest_inbound.follow_up_status == "pending" if latest_inbound else False
         threads.append({
             "message": message,
             "replies": replies,
@@ -252,6 +254,8 @@ def _build_threads(db: Session, goal_id: int = None) -> list[dict]:
             "is_concluded": latest_inbound.is_conclusion if latest_inbound else False,
             "reply_count": len(replies),
             "last_preview": last_preview,
+            "last_reply_at": last_reply_at,
+            "has_pending": has_pending,
         })
 
     return threads
