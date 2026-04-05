@@ -117,6 +117,41 @@ async def skip_follow_up(request: Request, reply_id: int, db: Session = Depends(
 
 
 
+@router.post("/replies/{reply_id}/regenerate")
+async def regenerate_suggestion(request: Request, reply_id: int, db: Session = Depends(get_db)):
+    """Regenerate the AI follow-up suggestion for a reply."""
+    reply = db.query(Reply).filter(Reply.id == reply_id).first()
+    if not reply or reply.follow_up_status != "pending":
+        form = await request.form()
+        redirect_url = form.get("redirect")
+        if redirect_url:
+            return RedirectResponse(url=redirect_url, status_code=303)
+        return HTMLResponse("Cannot regenerate", status_code=400)
+
+    message = reply.message or db.query(Message).filter(Message.id == reply.message_id).first()
+    profile = message.profile or db.query(Profile).filter(Profile.id == message.profile_id).first()
+    goal = message.goal or db.query(Goal).filter(Goal.id == message.goal_id).first()
+
+    all_replies = db.query(Reply).filter(Reply.message_id == message.id).order_by(Reply.round_number).all()
+    from app.services.inbox import suggest_follow_up, _build_thread_history
+    history = _build_thread_history(all_replies, message.body)
+
+    import time
+    from app.config import settings
+    time.sleep(settings.GROQ_RATE_LIMIT_DELAY)
+    new_suggestion = suggest_follow_up(
+        history, reply.sentiment, profile, goal, reply.is_conclusion,
+    )
+    reply.follow_up_suggestion = new_suggestion
+    db.commit()
+
+    form = await request.form()
+    redirect_url = form.get("redirect")
+    if redirect_url:
+        return RedirectResponse(url=redirect_url, status_code=303)
+    return HTMLResponse(new_suggestion)
+
+
 @router.post("/messages/{message_id}/reply")
 async def send_manual_reply(request: Request, message_id: int, db: Session = Depends(get_db)):
     """Send a free-form reply from the chat page (for concluded/waiting threads)."""

@@ -34,20 +34,19 @@
         background: #f0f4ff;
     }
     .chat-sidebar a.active-thread {
-        background: #e0e7ff;
+        background: #c7d2fe;
         border-left: 3px solid #4f46e5;
     }
     .sidebar-avatar {
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: #e0e7ff;
-        color: #4f46e5;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
         font-size: 0.85rem;
+        color: #fff;
         flex-shrink: 0;
     }
     .chat-panel {
@@ -90,17 +89,18 @@
         line-height: 1.55;
         white-space: pre-wrap;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        word-wrap: break-word;
     }
     .bubble-them {
         align-self: flex-start;
-        background: #e8f5e9;
-        color: #1a1a1a;
+        background: #f3f4f6;
+        color: #1f2937;
         border-bottom-left-radius: 4px;
     }
     .bubble-you {
         align-self: flex-end;
-        background: #e3f2fd;
-        color: #1a1a1a;
+        background: #dbeafe;
+        color: #1e3a5f;
         border-bottom-right-radius: 4px;
     }
     .chat-footer {
@@ -115,17 +115,39 @@
         border-radius: 10px;
         padding: 1rem;
     }
+    .ai-suggestion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.6rem;
+    }
     .ai-suggestion-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
         font-size: 0.8rem;
         font-weight: 600;
         color: #6d28d9;
-        margin-bottom: 0.6rem;
     }
     .ai-suggestion textarea {
         font-size: 0.85rem;
         margin-bottom: 0.5rem;
         border-radius: 8px;
     }
+    .regen-btn {
+        background: none;
+        border: none;
+        color: #6d28d9;
+        font-size: 0.8rem;
+        cursor: pointer;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin: 0 !important;
+    }
+    .regen-btn:hover { background: #ede9fe; }
     .chat-input-row {
         display: flex;
         gap: 0.5rem;
@@ -140,27 +162,40 @@
         margin-bottom: 0;
         white-space: nowrap;
     }
+    .skip-link {
+        background: none;
+        border: none;
+        color: #6b7280;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 0;
+        margin: 0 !important;
+        text-decoration: underline;
+    }
+    .skip-link:hover { color: #374151; }
 </style>
 {% endblock %}
 
 {% block content %}
 <nav style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-    <a href="/goals/{{ goal.id }}/inbox" style="font-size: 0.85rem;">&larr; Back to Inbox</a>
+    <a href="/goals/{{ goal.id }}/inbox" style="font-size: 0.85rem; text-decoration: none; color: #6b7280;">&larr; Back to Inbox</a>
 </nav>
 
 <div class="chat-layout">
     {# Sidebar: thread list #}
     <div class="chat-sidebar">
+        {% set avatar_colors = ['#4f46e5', '#0891b2', '#7c3aed', '#db2777', '#ea580c', '#059669', '#2563eb', '#9333ea', '#dc2626', '#ca8a04'] %}
         {% for thread in threads %}
+        {% set name_hash = thread.message.profile.id %}
         <a href="/goals/{{ goal.id }}/inbox/{{ thread.message.id }}"
            class="{{ 'active-thread' if thread.message.id == active_message_id }}">
-            <div class="sidebar-avatar">{{ thread.message.profile.name[0] }}</div>
+            <div class="sidebar-avatar" style="background: {{ avatar_colors[name_hash % 10] }};">{{ thread.message.profile.name[0] }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.15rem;">
                     <strong style="font-size: 0.85rem;">{{ thread.message.profile.name }}</strong>
                     <span class="badge badge-{{ thread.sentiment }}" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">{{ thread.sentiment | capitalize }}</span>
                 </div>
-                <p style="margin: 0; font-size: 0.75rem; opacity: 0.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <p style="margin: 0; font-size: 0.75rem; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     {{ thread.last_preview }}
                 </p>
             </div>
@@ -186,15 +221,11 @@
 
         <div class="chat-messages" id="chat-messages">
             {# Original outreach #}
-            <div class="bubble-you chat-bubble">
-                {{ active_thread.message.body }}
-            </div>
+            <div class="bubble-you chat-bubble">{{ active_thread.message.body }}</div>
 
             {# Thread replies #}
             {% for reply in active_thread.replies %}
-            <div class="chat-bubble {{ 'bubble-them' if reply.direction == 'inbound' else 'bubble-you' }}">
-                {{ reply.body }}
-            </div>
+            <div class="chat-bubble {{ 'bubble-them' if reply.direction == 'inbound' else 'bubble-you' }}">{{ reply.body }}</div>
             {% endfor %}
         </div>
 
@@ -202,14 +233,23 @@
         <div class="chat-footer" id="chat-footer">
             {% if active_thread.latest_inbound and active_thread.latest_inbound.follow_up_suggestion and active_thread.latest_inbound.follow_up_status == 'pending' %}
             <div class="ai-suggestion">
-                <div class="ai-suggestion-label">AI Suggested Reply</div>
+                <div class="ai-suggestion-header">
+                    <div class="ai-suggestion-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/></svg>
+                        AI Suggested Reply
+                    </div>
+                    <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/regenerate" style="margin: 0;">
+                        <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
+                        <button type="submit" class="regen-btn" onclick="this.innerHTML='Regenerating...';">&#8635; Regenerate</button>
+                    </form>
+                </div>
                 <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/follow-up">
                     <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
                     <textarea name="body" rows="3">{{ active_thread.latest_inbound.follow_up_suggestion }}</textarea>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button type="submit">Send</button>
-                        <button type="submit" class="outline secondary"
-                            formaction="/api/replies/{{ active_thread.latest_inbound.id }}/skip-followup">Skip</button>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <button type="submit" style="margin: 0;">Send</button>
+                        <button type="submit" class="skip-link"
+                            formaction="/api/replies/{{ active_thread.latest_inbound.id }}/skip-followup">Skip this reply</button>
                     </div>
                 </form>
             </div>

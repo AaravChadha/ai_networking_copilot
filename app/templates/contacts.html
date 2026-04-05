@@ -160,7 +160,7 @@
                 </td>
                 <td>
                     <div style="display: flex; align-items: center; gap: 0.6rem;">
-                        <div class="contact-avatar" style="background: {{ avatar_colors[loop.index0 % 10] }};">{{ c.profile.name[0] }}</div>
+                        <div class="contact-avatar" style="background: {{ avatar_colors[c.profile.id % 10] }};">{{ c.profile.name[0] }}</div>
                         <div>
                             <strong style="font-size: 0.9rem;">{{ c.profile.name }}</strong>
                             <div style="font-size: 0.75rem; color: #6b7280;">{{ c.profile.company }}</div>
