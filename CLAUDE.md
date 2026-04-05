@@ -363,15 +363,15 @@ All dynamic actions (approve, edit, send) use HTMX to swap HTML fragments — no
 ### Phase 8: Submission [~30 min]
 **Goal**: Final polish and Devpost submission
 
-- [ ] 8.1 UI test and polish
-  - [ ] 8.1.1 Walk through full flow in browser, note any visual issues
-  - [ ] 8.1.2 Fix any UI bugs or rough edges found
+- [x] 8.1 UI test and polish
+  - [x] 8.1.1 Walk through full flow in browser, note any visual issues
+  - [x] 8.1.2 Fix any UI bugs or rough edges found
 
-- [ ] 8.2 Devpost submission
-  - [ ] 8.2.1 Take screenshots of key pages (dashboard, contacts, outreach, chat)
-  - [ ] 8.2.2 Record video demo walkthrough
-  - [ ] 8.2.3 Upload images and video to Devpost
-  - [ ] 8.2.4 Submit project
+- [x] 8.2 Devpost submission
+  - [x] 8.2.1 Take screenshots of key pages (dashboard, contacts, outreach, chat)
+  - [x] 8.2.2 Record video demo walkthrough
+  - [x] 8.2.3 Upload images and video to Devpost
+  - [x] 8.2.4 Submit project
 
 ---
 
