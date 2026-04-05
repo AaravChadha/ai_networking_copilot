@@ -97,8 +97,8 @@
         max-width: 70%;
         padding: 0.85rem 1.1rem;
         border-radius: 14px;
-        font-size: 0.9rem;
-        line-height: 1.55;
+        font-size: 0.9375rem; /* 15px */
+        line-height: 1.6;
         white-space: pre-wrap;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         word-wrap: break-word;
@@ -114,17 +114,18 @@
         align-self: flex-end;
         background: #3b82f6;
         color: #fff;
+        border: 1px solid #3b82f6;
         border-bottom-right-radius: 4px;
     }
     .chat-footer {
         border-top: 1px solid var(--border);
-        padding: 1rem 1.5rem;
+        padding: 1.25rem 1.5rem;
         flex-shrink: 0;
         background: #fff;
     }
     .ai-suggestion {
-        background: #f5f3ff;
-        border: 1px solid #e0d7ff;
+        background: var(--brand-light);
+        border: 1px solid #c7d2fe;
         border-radius: 10px;
         padding: 1rem;
     }
@@ -140,17 +141,20 @@
         gap: 0.4rem;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #6d28d9;
+        color: var(--primary);
     }
     .ai-suggestion textarea {
         font-size: 0.85rem;
         margin-bottom: 0.5rem;
         border-radius: 8px;
+        min-height: 120px;
+        resize: vertical;
+        overflow-y: auto;
     }
     .regen-btn {
         background: none;
-        border: 1px solid #d8b4fe;
-        color: #6d28d9;
+        border: 1px solid #c7d2fe;
+        color: var(--primary);
         font-size: 0.8rem;
         cursor: pointer;
         padding: 0.3rem 0.65rem;
@@ -162,7 +166,7 @@
         font-weight: 500;
         transition: all 0.15s ease;
     }
-    .regen-btn:hover { background: #ede9fe; border-color: #c084fc; }
+    .regen-btn:hover { background: var(--brand-light); border-color: #a5b4fc; }
     .chat-input-row {
         display: flex;
         gap: 0.5rem;
@@ -266,8 +270,8 @@
                 <form method="post" action="/api/replies/{{ active_thread.latest_inbound.id }}/follow-up">
                     <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
                     <textarea name="body" rows="3">{{ active_thread.latest_inbound.follow_up_suggestion }}</textarea>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <button type="submit" style="margin: 0;">Send</button>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start;">
+                        <button type="submit" style="margin: 0;">Send Reply</button>
                         <button type="submit" class="skip-link"
                             formaction="/api/replies/{{ active_thread.latest_inbound.id }}/skip-followup">Skip this reply</button>
                     </div>
@@ -285,8 +289,23 @@
         </div>
 
         <script>
+            // Scroll chat to bottom
             const chatMessages = document.getElementById('chat-messages');
-            if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (chatMessages) {
+                requestAnimationFrame(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            }
+            // Auto-expand AI suggestion textarea
+            const aiTextarea = document.querySelector('.ai-suggestion textarea');
+            if (aiTextarea) {
+                aiTextarea.style.height = 'auto';
+                aiTextarea.style.height = Math.max(aiTextarea.scrollHeight, 120) + 'px';
+                aiTextarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.max(this.scrollHeight, 120) + 'px';
+                });
+            }
         </script>
         {% endif %}
     </div>

@@ -10,7 +10,7 @@
         gap: 0;
         background: #fff;
         border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border-radius: 0 var(--radius) var(--radius) 0;
         overflow: hidden;
         box-shadow: var(--shadow-sm);
     }
@@ -34,9 +34,9 @@
         width: 9px;
         height: 9px;
         border-radius: 50%;
-        background: #8b5cf6;
+        background: var(--primary);
         flex-shrink: 0;
-        box-shadow: 0 0 0 2px rgba(139,92,246,0.2);
+        box-shadow: 0 0 0 2px rgba(79,70,229,0.2);
     }
     .filter-btn {
         display: inline-flex;
@@ -53,9 +53,9 @@
     }
     .filter-btn:hover { opacity: 0.85; }
     .filter-all { background: #f3f4f6; color: #374151; }
-    .filter-positive { background: #f0fdf4; color: #166534; }
-    .filter-neutral { background: #fefce8; color: #854d0e; }
-    .filter-negative { background: #fef2f2; color: #991b1b; }
+    .filter-positive { background: #dcfce7; color: #14532d; }
+    .filter-neutral { background: #fef3c7; color: #78350f; }
+    .filter-negative { background: #fee2e2; color: #7f1d1d; }
     .filter-btn.active-filter.filter-all { background: #374151; color: #fff; }
     .filter-btn.active-filter.filter-positive { background: #22c55e; color: #fff; }
     .filter-btn.active-filter.filter-neutral { background: #f59e0b; color: #fff; }
@@ -67,7 +67,7 @@
 {% if goal %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
     <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
@@ -130,9 +130,9 @@
         <div style="width: 9px; flex-shrink: 0;"></div>
         {% endif %}
         <div style="flex: 1; min-width: 0;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem;">
+            <div style="margin-bottom: 0.2rem;">
                 <span style="font-size: 0.95rem; {{ 'font-weight: 700;' if thread.has_pending else 'font-weight: 500;' }}">{{ thread.message.profile.name }}</span>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem;">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</div>
             </div>
             <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 {{ thread.last_preview }}

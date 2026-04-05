@@ -56,9 +56,7 @@
         font-weight: 700;
         font-size: 0.8rem;
     }
-    .score-high { background: #eef2ff; color: #3730a3; }
-    .score-mid { background: #e0e7ff; color: #4338ca; }
-    .score-low { background: #f3f4f6; color: #6b7280; }
+    .score-high, .score-mid, .score-low { background: #f3f4f6; color: var(--text-primary); }
     .skill-tag {
         display: inline-block;
         padding: 0.15rem 0.5rem;
@@ -104,7 +102,7 @@
 {% block campaign_context %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
     <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
@@ -133,7 +131,7 @@
     </div>
     {% if contacts %}
     <select onchange="if(this.value) selectTop(+this.value); this.selectedIndex=0;" style="width: auto; margin: 0; font-size: 0.8rem; padding: 0.4rem 0.75rem;">
-        <option value="">Quick select...</option>
+        <option value="">Select top contacts</option>
         <option value="5">Top 5</option>
         <option value="10">Top 10</option>
         <option value="20">Top 20</option>
@@ -183,15 +181,15 @@
                 </td>
                 <td>
                     {% set clean_reason = c.reason.replace(c.profile.name + ' is a good match because ', '').replace(c.profile.name + ' is a strong match because ', '').replace(c.profile.name + ' is an excellent match because ', '').replace(c.profile.name + ' ', '') %}
-                    <div class="reason-text" title="{{ c.reason }}">{{ clean_reason }}</div>
+                    {% set clean_reason = clean_reason.lstrip().replace('she works as ', '').replace('he works as ', '').replace('they work as ', '').replace('She works as ', '').replace('He works as ', '').replace('They work as ', '').replace('she is ', '').replace('he is ', '').replace('She is ', '').replace('He is ', '') %}
+                    <div class="reason-text" title="{{ c.reason }}">{{ c.profile.role }} at {{ c.profile.company }} — {{ clean_reason[:1] | upper }}{{ clean_reason[1:] }}</div>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <div class="sticky-footer">
-        <span id="select-count" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+    <div class="sticky-footer" style="justify-content: flex-end;">
         <button type="submit" id="submit-btn" style="margin: 0; font-size: 0.95rem; padding: 0.6rem 1.5rem;" onclick="this.setAttribute('aria-busy', 'true'); this.textContent='Loading templates...';">
             Next: Choose Template <span id="btn-count" style="opacity: 0.8;">(0)</span>
         </button>
@@ -201,7 +199,6 @@
 <script>
 function updateCount() {
     const checked = document.querySelectorAll('input[name="profile_ids"]:checked').length;
-    document.getElementById('select-count').textContent = checked + ' selected';
     document.getElementById('btn-count').textContent = '(' + checked + ')';
 }
 

@@ -10,6 +10,7 @@
         padding: 1.25rem 1rem;
         position: relative;
         overflow: hidden;
+        margin: 0;
     }
     .stat-card-accent::before {
         content: '';
@@ -42,7 +43,10 @@
     a.stat-card-link {
         text-decoration: none;
         color: inherit;
-        display: block;
+        display: flex;
+    }
+    a.stat-card-link article {
+        flex: 1;
     }
     a.stat-card-link:hover article {
         border-color: var(--primary);
@@ -59,10 +63,11 @@
         display: flex;
         justify-content: center;
         gap: 1.5rem;
-        padding: 2rem 0;
+        padding: 1.25rem 0;
     }
     .msg-breakdown-item {
         text-align: center;
+        flex: 1;
     }
     .msg-breakdown-item .num {
         font-size: 1.5rem;
@@ -71,6 +76,7 @@
     .msg-breakdown-item .label {
         font-size: 0.8rem;
         color: var(--text-secondary);
+        margin-bottom: 0.4rem;
     }
     .msg-breakdown-item .dot {
         display: inline-block;
@@ -79,6 +85,18 @@
         border-radius: 50%;
         margin-right: 0.3rem;
         vertical-align: middle;
+    }
+    .mini-bar {
+        height: 4px;
+        border-radius: 2px;
+        background: #f3f4f6;
+        margin-top: 0.4rem;
+        overflow: hidden;
+    }
+    .mini-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s ease;
     }
 </style>
 {% endblock %}
@@ -91,13 +109,14 @@
 
 {% if goals %}
 {# Stat cards with SVG icons and semantic accent borders #}
-<div class="stats-grid" style="margin-bottom: 2rem;">
+<div class="stats-grid" style="margin-bottom: 2rem; grid-template-columns: repeat(4, 1fr); align-items: stretch;">
     <article class="stat-card-accent accent-blue">
         <div class="stat-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
         </div>
         <h2>{{ goals | length }}</h2>
         <p>Campaigns</p>
+        <div class="stat-sub">&nbsp;</div>
     </article>
     <article class="stat-card-accent accent-blue">
         <div class="stat-icon">
@@ -105,6 +124,7 @@
         </div>
         <h2>{{ total_sent }}</h2>
         <p>Messages Sent</p>
+        <div class="stat-sub">&nbsp;</div>
     </article>
     <article class="stat-card-accent accent-green">
         <div class="stat-icon">
@@ -156,20 +176,24 @@
                 <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
                 {% endif %}
             </div>
+            {% set all_msg_total = all_pending + all_sent_only + all_replied %}
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Messages</h4>
                 <div class="msg-breakdown">
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #f59e0b;">{{ all_pending }}</div>
                         <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_pending / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #f59e0b;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #3b82f6;">{{ all_sent_only }}</div>
                         <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_sent_only / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #3b82f6;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #22c55e;">{{ all_replied }}</div>
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_replied / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #22c55e;"></div></div>
                     </div>
                 </div>
             </div>
@@ -189,20 +213,24 @@
                 <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
                 {% endif %}
             </div>
+            {% set g_msg_total = s.pending + s.sent_only + s.replied %}
             <div class="chart-card">
                 <h4 style="text-align: center; margin-top: 0;">Messages</h4>
                 <div class="msg-breakdown">
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #f59e0b;">{{ s.pending }}</div>
                         <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.pending / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #f59e0b;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #3b82f6;">{{ s.sent_only }}</div>
                         <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.sent_only / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #3b82f6;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #22c55e;">{{ s.replied }}</div>
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
+                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.replied / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #22c55e;"></div></div>
                     </div>
                 </div>
             </div>
@@ -298,7 +326,7 @@ function switchCampaign(id) {
 <article style="margin-bottom: 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <div>
-            <strong style="font-size: 1.05rem;">{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
+            <strong style="font-size: 1.05rem;">{{ goal.description[:1] | upper }}{{ goal.description[1:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
             <br><small style="color: var(--text-muted);">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
         </div>
         <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #166534;">
@@ -311,9 +339,9 @@ function switchCampaign(id) {
         <span style="opacity: 0.3;">·</span>
         <span style="font-size: 0.85rem;"><strong>{{ stats.replies }}</strong> replies ({{ stats.reply_rate }}%)</span>
         <span style="opacity: 0.3;">·</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>{{ stats.positive }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>{{ stats.neutral }}</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.8rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>{{ stats.negative }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #166534;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>{{ stats.positive }} positive</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #854d0e;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>{{ stats.neutral }} neutral</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #991b1b;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>{{ stats.negative }} negative</span>
     </div>
     <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-bottom: 0;">View Campaign</a>

@@ -52,7 +52,7 @@
 {% block campaign_context %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
     </div>
     <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
@@ -96,7 +96,8 @@
 {# Progress bar #}
 <div style="margin-bottom: 1.5rem;">
     <div class="progress-bar-bg">
-        {% if sent + replied > 0 %}<div class="seg-sent" style="width: {{ ((sent + replied) / total * 100) | round }}%;"></div>{% endif %}
+        {% if replied > 0 %}<div style="background: #22c55e; height: 100%; width: {{ (replied / total * 100) | round }}%;"></div>{% endif %}
+        {% if sent > 0 %}<div class="seg-sent" style="width: {{ (sent / total * 100) | round }}%;"></div>{% endif %}
         {% if approved > 0 %}<div class="seg-approved" style="width: {{ (approved / total * 100) | round }}%;"></div>{% endif %}
         {% if drafts > 0 %}<div class="seg-draft" style="width: {{ (drafts / total * 100) | round }}%;"></div>{% endif %}
     </div>

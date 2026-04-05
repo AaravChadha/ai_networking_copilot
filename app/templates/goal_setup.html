@@ -75,13 +75,15 @@
         display: flex;
         align-items: center;
         gap: 0.6rem;
-        background: #f5f3ff;
-        border: 1px solid #e0d7ff;
+        background: var(--brand-light);
+        border: 1px solid #c7d2fe;
+        border-left: 4px solid var(--primary);
         border-radius: 8px;
-        padding: 0.75rem 1rem;
+        padding: 0.85rem 1.15rem;
         margin-bottom: 1rem;
         font-size: 0.85rem;
-        color: #5b21b6;
+        color: var(--primary);
+        font-weight: 500;
     }
     .ai-callout svg { flex-shrink: 0; }
     .field-error {
@@ -90,10 +92,8 @@
         margin-top: 0.25rem;
         display: none;
     }
-    input:invalid:not(:placeholder-shown),
-    textarea:invalid:not(:placeholder-shown),
-    select:invalid:not([value=""]) {
-        border-color: #dc2626;
+    .field-invalid {
+        border-color: #dc2626 !important;
     }
 </style>
 {% endblock %}
@@ -204,21 +204,21 @@ document.getElementById('campaign-form').addEventListener('submit', function(e) 
     const goalType = document.getElementById('goal_type');
     if (!goalType.value) {
         document.getElementById('err-goal_type').style.display = 'block';
-        goalType.style.borderColor = '#dc2626';
+        goalType.classList.add('field-invalid');
         valid = false;
     } else {
         document.getElementById('err-goal_type').style.display = 'none';
-        goalType.style.borderColor = '';
+        goalType.classList.remove('field-invalid');
     }
     // Check description
     const desc = document.getElementById('description');
     if (!desc.value.trim()) {
         document.getElementById('err-description').style.display = 'block';
-        desc.style.borderColor = '#dc2626';
+        desc.classList.add('field-invalid');
         valid = false;
     } else {
         document.getElementById('err-description').style.display = 'none';
-        desc.style.borderColor = '';
+        desc.classList.remove('field-invalid');
     }
     if (!valid) { e.preventDefault(); return; }
     const btn = document.getElementById('submit-btn');

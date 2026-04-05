@@ -33,15 +33,15 @@
         list-style: none;
     }
     .section-card summary::-webkit-details-marker { display: none; }
+    .section-card summary::marker { display: none; content: ''; }
     .section-card summary:hover { background: #f9fafb; }
     .section-card summary .chevron {
         margin-left: auto;
-        transition: transform 0.15s ease;
+        transition: transform 0.2s ease;
         color: var(--text-muted);
         flex-shrink: 0;
     }
     .section-card[open] summary .chevron { transform: rotate(180deg); }
-    .section-card[open] summary { border-bottom: 1px solid #f0f1f3; }
     .section-card .section-body {
         padding: 0.75rem 1rem;
     }
@@ -61,14 +61,6 @@
         border-color: var(--primary);
         box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
         outline: none;
-    }
-    .section-hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 0.35rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
     }
     .preview-box {
         display: none;
@@ -105,7 +97,7 @@
 {% block campaign_context %}
 <div class="campaign-bar">
     <div>
-        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-title">{{ goal.description[:1] | upper }}{{ goal.description[1:] }}</div>
         <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign &middot; {{ profile_ids | length }} contacts selected</div>
     </div>
     <a href="/" style="font-size: 0.8rem;">&larr; Dashboard</a>
@@ -200,10 +192,6 @@
         </summary>
         <div class="section-body">
             <textarea id="preview-intro" name="intro_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
-            <div class="section-hint">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Edit to customize how the AI writes this section
-            </div>
         </div>
     </details>
 
@@ -214,10 +202,6 @@
         </summary>
         <div class="section-body">
             <textarea id="preview-context" name="context_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
-            <div class="section-hint">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Edit to customize how the AI writes this section
-            </div>
         </div>
     </details>
 
@@ -228,10 +212,6 @@
         </summary>
         <div class="section-body">
             <textarea id="preview-ask" name="ask_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
-            <div class="section-hint">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Edit to customize how the AI writes this section
-            </div>
         </div>
     </details>
 
@@ -242,10 +222,6 @@
         </summary>
         <div class="section-body">
             <textarea id="preview-closing" name="closing_override" rows="2" oninput="autoResize(this); updatePreviewBox();"></textarea>
-            <div class="section-hint">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Edit to customize how the AI writes this section
-            </div>
         </div>
     </details>
 

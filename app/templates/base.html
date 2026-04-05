@@ -29,29 +29,37 @@
         }
         body { background: var(--bg-page); margin: 0; }
 
-        /* Typography */
+        /* Typography — locked scale */
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.75rem; /* 28px */
             font-weight: 700;
             color: var(--text-primary);
             margin: 0 0 var(--sp-xs);
         }
         h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
             color: var(--text-primary);
             margin: 0 0 var(--sp-sm);
         }
         h3 {
-            font-size: 1.05rem;
+            font-size: 1.05rem; /* ~17px */
             font-weight: 600;
             color: var(--text-primary);
         }
-        h4 {
-            font-size: 0.9rem;
+        h4, .label-upper {
+            font-size: 0.8125rem; /* 13px */
             font-weight: 500;
             color: var(--text-secondary);
-            letter-spacing: 0.01em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Message body text */
+        .msg-body {
+            font-size: 0.9375rem; /* 15px */
+            line-height: 1.6;
+            color: var(--text-primary);
         }
         .page-header {
             margin-bottom: var(--sp-md);
@@ -70,79 +78,80 @@
             color: var(--brand-color);
         }
         .ai-accent-bg {
-            background: #f5f3ff;
-            border: 1px solid #e0d7ff;
+            background: var(--brand-light);
+            border: 1px solid #c7d2fe;
         }
 
         /* Links */
         a { color: var(--primary); }
         a:hover { color: var(--primary-hover); }
 
-        /* Sticky navbar */
+        /* Sticky navbar — fully override Pico nav */
         nav.top-nav {
+            all: unset;
+            display: block !important;
             position: sticky;
             top: 0;
             z-index: 100;
             background: #fff;
             border-bottom: 1px solid var(--border);
             box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-            padding: 0;
+            width: 100%;
         }
         nav.top-nav .nav-inner {
+            all: unset;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: stretch;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 1.5rem;
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center;
-            height: 56px;
+            height: 60px;
+            box-sizing: border-box;
         }
         nav.top-nav .brand {
-            display: flex;
+            all: unset;
+            display: flex !important;
             align-items: center;
             gap: 0.5rem;
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text-primary);
-            text-decoration: none;
+            color: var(--text-primary) !important;
+            cursor: pointer;
             margin-right: auto;
         }
-        nav.top-nav .brand:hover { color: var(--text-primary); }
+        nav.top-nav .brand:hover { opacity: 0.85; }
         nav.top-nav .brand svg { flex-shrink: 0; }
         nav.top-nav .nav-links {
-            display: flex;
-            gap: 0;
-            list-style: none;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: 56px;
+            all: unset;
+            display: flex !important;
             align-items: stretch;
+            height: 100%;
         }
         nav.top-nav .nav-links li {
+            all: unset;
             display: flex;
             align-items: stretch;
-            padding: 0;
-            margin: 0;
         }
         nav.top-nav .nav-links a {
-            display: flex;
+            all: unset;
+            display: flex !important;
             align-items: center;
-            text-decoration: none;
             padding: 0 1.1rem;
             font-size: 0.9rem;
-            color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
-            padding-bottom: 2px;
+            color: var(--text-secondary) !important;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
             transition: all 0.15s ease;
         }
         nav.top-nav .nav-links a:hover {
-            color: var(--text-primary);
+            color: var(--text-primary) !important;
             border-bottom-color: #d1d5db;
         }
         nav.top-nav .nav-links a.active {
-            color: var(--brand-color);
+            color: var(--primary) !important;
             font-weight: 600;
-            border-bottom-color: var(--brand-color);
+            border-bottom-color: var(--primary);
         }
 
         /* Container */
@@ -164,7 +173,9 @@
             font-weight: 600;
             font-size: 0.95rem;
             color: var(--text-primary);
-            text-transform: capitalize;
+        }
+        .campaign-bar-title::first-letter {
+            text-transform: uppercase;
         }
         .campaign-bar-type {
             font-size: 0.8rem;
@@ -314,6 +325,12 @@
         setTimeout(() => t.remove(), 3000);
     }
     document.body.addEventListener('htmx:responseError', function() { showToast('Something went wrong', 'error'); });
+    // Auto-capitalize campaign titles
+    document.querySelectorAll('.campaign-bar-title').forEach(el => {
+        if (el.textContent && el.textContent[0] !== el.textContent[0].toUpperCase()) {
+            el.textContent = el.textContent[0].toUpperCase() + el.textContent.slice(1);
+        }
+    });
     </script>
 </body>
 </html>
