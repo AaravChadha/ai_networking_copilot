@@ -126,8 +126,11 @@
 {% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-    <h2 style="margin: 0;">Matched Contacts</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-sm);">
+    <div>
+        <h2 style="margin: 0;">Matched Contacts</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">AI-ranked professionals matching your campaign goals</p>
+    </div>
     {% if contacts %}
     <div style="display: flex; gap: 0.5rem;">
         <button type="button" class="outline secondary" style="margin: 0; font-size: 0.8rem; padding: 0.4rem 0.75rem;" onclick="selectTop(5)">Select Top 5</button>

@@ -12,8 +12,71 @@
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
             --brand-color: #4f46e5;
+            --brand-light: #eef2ff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border: #e5e7eb;
+            --bg-page: #f8f9fb;
+            --bg-card: #fff;
+            --sp-xs: 0.5rem;   /* 8px */
+            --sp-sm: 1rem;     /* 16px */
+            --sp-md: 1.5rem;   /* 24px */
+            --sp-lg: 2rem;     /* 32px */
+            --sp-xl: 3rem;     /* 48px */
         }
-        body { background: #f8f9fb; margin: 0; }
+        body { background: var(--bg-page); margin: 0; }
+
+        /* Typography */
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--sp-xs);
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--sp-sm);
+        }
+        h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        h4 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.01em;
+        }
+        .page-header {
+            margin-bottom: var(--sp-md);
+        }
+        .page-header h1 {
+            margin-bottom: 0.2rem;
+        }
+        .page-header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* AI accent */
+        .ai-accent {
+            color: var(--brand-color);
+        }
+        .ai-accent-bg {
+            background: #f5f3ff;
+            border: 1px solid #e0d7ff;
+        }
+
+        /* Links */
+        a { color: var(--primary); }
+        a:hover { color: var(--primary-hover); }
 
         /* Sticky navbar */
         nav.top-nav {
@@ -80,15 +143,15 @@
         }
 
         /* Container */
-        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: var(--sp-md) var(--sp-md) var(--sp-lg); }
 
         /* Campaign context bar */
         .campaign-bar {
-            background: #fff;
-            border: 1px solid #e5e7eb;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 0.75rem 1.25rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--sp-sm);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -97,11 +160,11 @@
         .campaign-bar-title {
             font-weight: 600;
             font-size: 0.95rem;
-            color: #1a1a2e;
+            color: var(--text-primary);
         }
         .campaign-bar-type {
             font-size: 0.8rem;
-            color: #6b7280;
+            color: var(--text-secondary);
         }
 
         /* Step bar */
@@ -109,7 +172,7 @@
             display: flex;
             align-items: center;
             gap: 0;
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--sp-md);
             background: #fff;
             border: 1px solid #e5e7eb;
             border-radius: var(--radius);
@@ -154,9 +217,13 @@
         article {
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            border: 1px solid #e5e7eb;
-            padding: 1.25rem;
+            border: 1px solid var(--border);
+            padding: var(--sp-sm) 1.25rem;
         }
+
+        /* Sections spacing */
+        section, .section { margin-bottom: var(--sp-md); }
+        article + article { margin-top: var(--sp-sm); }
 
         /* Badges */
         .badge {

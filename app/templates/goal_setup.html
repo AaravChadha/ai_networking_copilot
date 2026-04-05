@@ -3,7 +3,10 @@
 {% block title %}New Campaign - AI Networking Copilot{% endblock %}
 
 {% block content %}
-<h1>Create a New Campaign</h1>
+<div class="page-header">
+    <h1>Create a New Campaign</h1>
+    <p>Define your networking goal and let AI find the best contacts</p>
+</div>
 <form method="post" action="/goals/new">
     <label for="goal_type">Goal Type</label>
     <select id="goal_type" name="goal_type" required>

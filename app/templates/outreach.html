@@ -81,7 +81,10 @@
 {% endblock %}
 
 {% block content %}
-<h2>Outreach Messages</h2>
+<div class="page-header">
+    <h2>Outreach Messages</h2>
+    <p>Review, approve, and send your AI-generated messages</p>
+</div>
 
 {% if messages %}
 {% set drafts = messages | selectattr('status', 'equalto', 'draft') | list | length %}

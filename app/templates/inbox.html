@@ -91,7 +91,10 @@
     <a href="/goals/{{ goal.id }}/outreach" style="font-size: 0.85rem; text-decoration: none; color: #6b7280;">&larr; Outreach</a>
     <span style="opacity: 0.3;">|</span>
     {% endif %}
-    <h2 style="margin: 0;">{% if goal %}Inbox{% else %}All Conversations{% endif %}</h2>
+    <div>
+        <h2 style="margin: 0;">{% if goal %}Inbox{% else %}All Conversations{% endif %}</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">{% if goal %}Replies and follow-ups for this campaign{% else %}All replies across your campaigns{% endif %}</p>
+    </div>
 </div>
 
 {% if threads %}

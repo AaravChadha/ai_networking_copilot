@@ -105,7 +105,10 @@
 {% endblock %}
 
 {% block content %}
-<h2>Choose Outreach Template</h2>
+<div class="page-header">
+    <h2>Choose Outreach Template</h2>
+    <p>Pick a message style and customize how the AI writes each section</p>
+</div>
 
 <form method="post" action="/goals/{{ goal.id }}/generate">
     {% for pid in profile_ids %}
