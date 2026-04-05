@@ -5,8 +5,8 @@
 {% block head %}
 <style>
     .template-controls {
-        background: #fff;
-        border: 1px solid var(--border);
+        background: #f8f9fb;
+        border: 1px solid #d1d5db;
         border-radius: var(--radius);
         padding: 1.25rem;
         box-shadow: var(--shadow-sm);
@@ -30,10 +30,16 @@
         font-weight: 600;
         color: var(--text-primary);
         user-select: none;
-        list-style: none;
+        list-style: none !important;
     }
-    .section-card summary::-webkit-details-marker { display: none; }
-    .section-card summary::marker { display: none; content: ''; }
+    .section-card summary::-webkit-details-marker,
+    .section-card summary::marker {
+        display: none !important;
+        content: '' !important;
+        font-size: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
     .section-card summary:hover { background: #f9fafb; }
     .section-card summary .chevron {
         margin-left: auto;

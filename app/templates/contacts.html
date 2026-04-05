@@ -56,7 +56,7 @@
         font-weight: 700;
         font-size: 0.8rem;
     }
-    .score-high, .score-mid, .score-low { background: #f3f4f6; color: var(--text-primary); }
+    .score-high, .score-mid, .score-low { background: #f3f4f6; color: var(--text-primary); border: 1.5px solid #d1d5db; }
     .skill-tag {
         display: inline-block;
         padding: 0.15rem 0.5rem;
@@ -70,7 +70,7 @@
     .reason-text {
         font-size: 0.8rem;
         color: #6b7280;
-        max-width: 250px;
+        max-width: 320px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -180,9 +180,8 @@
                     </div>
                 </td>
                 <td>
-                    {% set clean_reason = c.reason.replace(c.profile.name + ' is a good match because ', '').replace(c.profile.name + ' is a strong match because ', '').replace(c.profile.name + ' is an excellent match because ', '').replace(c.profile.name + ' ', '') %}
-                    {% set clean_reason = clean_reason.lstrip().replace('she works as ', '').replace('he works as ', '').replace('they work as ', '').replace('She works as ', '').replace('He works as ', '').replace('They work as ', '').replace('she is ', '').replace('he is ', '').replace('She is ', '').replace('He is ', '') %}
-                    <div class="reason-text" title="{{ c.reason }}">{{ c.profile.role }} at {{ c.profile.company }} — {{ clean_reason[:1] | upper }}{{ clean_reason[1:] }}</div>
+                    {% set skills_str = c.profile.get_skills()[:3] | join(', ') %}
+                    <div class="reason-text" title="{{ c.reason }}">{{ c.profile.role }} at {{ c.profile.company }}{% if skills_str %} — {{ skills_str }}{% endif %}</div>
                 </td>
             </tr>
             {% endfor %}

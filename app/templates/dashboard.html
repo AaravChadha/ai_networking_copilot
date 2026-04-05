@@ -160,7 +160,7 @@
         <select id="campaignSelect" onchange="switchCampaign(this.value)" style="width: auto; margin: 0; padding: 0.4rem 0.75rem;">
             <option value="all" selected>All Campaigns</option>
             {% for g in goals | reverse %}
-            <option value="{{ g.id }}">{{ g.description[:40] }}{% if g.description|length > 40 %}...{% endif %}</option>
+            <option value="{{ g.id }}">{{ g.description[:1] | upper }}{{ g.description[1:40] }}{% if g.description|length > 40 %}...{% endif %}</option>
             {% endfor %}
         </select>
     </div>
@@ -183,17 +183,14 @@
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #f59e0b;">{{ all_pending }}</div>
                         <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_pending / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #f59e0b;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #3b82f6;">{{ all_sent_only }}</div>
                         <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_sent_only / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #3b82f6;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #22c55e;">{{ all_replied }}</div>
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (all_replied / all_msg_total * 100) | round if all_msg_total > 0 else 0 }}%; background: #22c55e;"></div></div>
                     </div>
                 </div>
             </div>
@@ -220,17 +217,14 @@
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #f59e0b;">{{ s.pending }}</div>
                         <div class="label"><span class="dot" style="background: #f59e0b;"></span>Pending</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.pending / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #f59e0b;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #3b82f6;">{{ s.sent_only }}</div>
                         <div class="label"><span class="dot" style="background: #3b82f6;"></span>Sent</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.sent_only / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #3b82f6;"></div></div>
                     </div>
                     <div class="msg-breakdown-item">
                         <div class="num" style="color: #22c55e;">{{ s.replied }}</div>
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
-                        <div class="mini-bar"><div class="mini-bar-fill" style="width: {{ (s.replied / g_msg_total * 100) | round if g_msg_total > 0 else 0 }}%; background: #22c55e;"></div></div>
                     </div>
                 </div>
             </div>
@@ -334,14 +328,17 @@ function switchCampaign(id) {
             {{ goal.status | capitalize }}
         </span>
     </div>
-    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
-        <span style="font-size: 0.85rem;"><strong>{{ stats.sent }}</strong> sent</span>
-        <span style="opacity: 0.3;">·</span>
-        <span style="font-size: 0.85rem;"><strong>{{ stats.replies }}</strong> replies ({{ stats.reply_rate }}%)</span>
-        <span style="opacity: 0.3;">·</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #166534;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>{{ stats.positive }} positive</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #854d0e;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>{{ stats.neutral }} neutral</span>
-        <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #991b1b;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>{{ stats.negative }} negative</span>
+    <div style="margin-bottom: 1rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem;">
+            <span style="font-size: 0.85rem;"><strong>{{ stats.sent }}</strong> sent</span>
+            <span style="opacity: 0.3;">·</span>
+            <span style="font-size: 0.85rem;"><strong>{{ stats.replies }}</strong> replies ({{ stats.reply_rate }}%)</span>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #14532d;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>{{ stats.positive }} positive</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #78350f;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>{{ stats.neutral }} neutral</span>
+            <span style="display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: #7f1d1d;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>{{ stats.negative }} negative</span>
+        </div>
     </div>
     <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-bottom: 0;">View Campaign</a>

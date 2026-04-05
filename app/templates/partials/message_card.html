@@ -18,15 +18,6 @@
 
     <p style="margin-bottom: 0.5rem;"><strong>Subject:</strong> {{ msg.subject }}</p>
 
-    {% if msg.status == 'replied' %}
-    <div style="margin-bottom: 0.75rem;">
-        <a href="/goals/{{ msg.goal_id }}/inbox/{{ msg.id }}" style="font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            View conversation
-        </a>
-    </div>
-    {% endif %}
-
     <div id="body-display-{{ msg.id }}" class="msg-body">
         {% for para in msg.body.replace('\r\n', '\n').split('\n') %}
         {% if para.strip() %}
@@ -35,7 +26,14 @@
         {% endfor %}
     </div>
 
-    {% if msg.status == 'draft' or msg.status == 'approved' %}
+    {% if msg.status == 'replied' %}
+    <footer style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f0f1f3;">
+        <a href="/goals/{{ msg.goal_id }}/inbox/{{ msg.id }}" style="font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            View conversation
+        </a>
+    </footer>
+    {% elif msg.status == 'draft' or msg.status == 'approved' %}
     <footer style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
         {% if msg.status == 'draft' %}
         <button class="outline" hx-post="/api/messages/{{ msg.id }}/approve" hx-target="#message-{{ msg.id }}" hx-swap="outerHTML">

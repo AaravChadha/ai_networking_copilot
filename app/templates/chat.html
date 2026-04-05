@@ -105,7 +105,7 @@
     }
     .bubble-them {
         align-self: flex-start;
-        background: #fff;
+        background: #f3f4f6;
         color: #1f2937;
         border: 1px solid #e5e7eb;
         border-bottom-left-radius: 4px;
@@ -148,8 +148,8 @@
         margin-bottom: 0.5rem;
         border-radius: 8px;
         min-height: 120px;
-        resize: vertical;
-        overflow-y: auto;
+        resize: none;
+        overflow: hidden;
     }
     .regen-btn {
         background: none;
@@ -190,7 +190,7 @@
         cursor: pointer;
         padding: 0;
         margin: 0 !important;
-        text-decoration: underline;
+        text-decoration: none;
         transition: opacity 0.15s ease;
     }
     .skip-link:hover { opacity: 1; }
@@ -289,11 +289,15 @@
         </div>
 
         <script>
-            // Scroll chat to bottom
+            // Scroll chat to show latest messages
             const chatMessages = document.getElementById('chat-messages');
             if (chatMessages) {
                 requestAnimationFrame(() => {
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    // If content fits in viewport, stay at top to show full conversation
+                    // Otherwise scroll to bottom to show latest
+                    if (chatMessages.scrollHeight > chatMessages.clientHeight) {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
                 });
             }
             // Auto-expand AI suggestion textarea

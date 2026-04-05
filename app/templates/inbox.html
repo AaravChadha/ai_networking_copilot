@@ -15,17 +15,20 @@
         box-shadow: var(--shadow-sm);
     }
     .inbox-row {
+        all: unset;
         display: flex;
         align-items: center;
         gap: 1rem;
         padding: 0.9rem 1.25rem;
-        text-decoration: none;
-        color: inherit;
+        cursor: pointer;
+        color: var(--text-primary);
         border-bottom: 1px solid #f0f1f3;
         transition: background 0.15s ease;
         border-left: 4px solid transparent;
+        margin-bottom: -1px;
+        box-sizing: border-box;
     }
-    .inbox-row:last-child { border-bottom: none; }
+    .inbox-row:last-child { border-bottom: none; margin-bottom: 0; }
     .inbox-row:hover { background: #f0f4ff; }
     .inbox-row.sentiment-positive { border-left-color: #22c55e; }
     .inbox-row.sentiment-neutral { border-left-color: #f59e0b; }
