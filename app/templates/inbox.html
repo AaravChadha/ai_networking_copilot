@@ -2,49 +2,62 @@
 
 {% block title %}Inbox - AI Networking Copilot{% endblock %}
 
-{% block content %}
-<hgroup>
-    <h1>Inbox</h1>
-    {% if goal %}
-    <p>{{ goal.description }}</p>
-    {% else %}
-    <p>All replies across campaigns</p>
-    {% endif %}
-</hgroup>
-
+{% block campaign_context %}
 {% if goal %}
-<nav style="margin-bottom: 1.5rem;">
-    <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline secondary">Back to Outreach</a>
-</nav>
+<div class="campaign-bar">
+    <div>
+        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
+    </div>
+    <a href="/" style="font-size: 0.8rem;">Back to Dashboard</a>
+</div>
+<div class="step-bar">
+    <a href="/goals/{{ goal.id }}/contacts" class="step-item completed">
+        <span class="step-num">&#10003;</span> Contacts
+    </a>
+    <a href="/goals/{{ goal.id }}/templates" class="step-item completed">
+        <span class="step-num">&#10003;</span> Templates
+    </a>
+    <a href="/goals/{{ goal.id }}/outreach" class="step-item completed">
+        <span class="step-num">&#10003;</span> Outreach
+    </a>
+    <a href="/goals/{{ goal.id }}/inbox" class="step-item active">
+        <span class="step-num">4</span> Inbox
+    </a>
+</div>
 {% endif %}
+{% endblock %}
+
+{% block content %}
+<h2>{% if goal %}Inbox{% else %}All Conversations{% endif %}</h2>
 
 {% if threads %}
 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
     <span>{{ threads | length }} conversations</span>
-    <span>·</span>
+    <span>&middot;</span>
     <span class="badge badge-positive">{{ threads | selectattr('sentiment', 'equalto', 'positive') | list | length }} positive</span>
     <span class="badge badge-neutral">{{ threads | selectattr('sentiment', 'equalto', 'neutral') | list | length }} neutral</span>
     <span class="badge badge-negative">{{ threads | selectattr('sentiment', 'equalto', 'negative') | list | length }} negative</span>
 </div>
 
-<div role="list" style="display: flex; flex-direction: column; gap: 0;">
+<div role="list" style="display: flex; flex-direction: column; gap: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
     {% for thread in threads %}
     <a href="/goals/{{ thread.message.goal_id }}/inbox/{{ thread.message.id }}"
        role="listitem"
-       style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; text-decoration: none; color: inherit; border-bottom: 1px solid var(--pico-muted-border-color);">
+       style="display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; text-decoration: none; color: inherit; border-bottom: 1px solid #f0f1f3;">
         <div style="flex: 1; min-width: 0;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
                 <strong style="font-size: 0.95rem;">{{ thread.message.profile.name }}</strong>
-                <span style="font-size: 0.8rem; opacity: 0.6;">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
+                <span style="font-size: 0.8rem; opacity: 0.5;">{{ thread.message.profile.role }} at {{ thread.message.profile.company }}</span>
             </div>
-            <p style="margin: 0; font-size: 0.85rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <p style="margin: 0; font-size: 0.85rem; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 {{ thread.last_preview }}
             </p>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
             <span style="font-size: 0.8rem; opacity: 0.5;">{{ thread.reply_count }} msg{{ 's' if thread.reply_count != 1 }}</span>
             {% if thread.is_concluded %}
-            <span class="badge" style="background: #e2e3e5; color: #383d41; font-size: 0.75rem;">Done</span>
+            <span class="badge" style="background: #f3f4f6; color: #6b7280; font-size: 0.75rem;">Done</span>
             {% endif %}
             <span class="badge badge-{{ thread.sentiment }}" style="font-size: 0.75rem;">{{ thread.sentiment | capitalize }}</span>
         </div>

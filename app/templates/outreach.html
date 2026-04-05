@@ -2,29 +2,41 @@
 
 {% block title %}Outreach - AI Networking Copilot{% endblock %}
 
+{% block campaign_context %}
+<div class="campaign-bar">
+    <div>
+        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign</div>
+    </div>
+    <a href="/" style="font-size: 0.8rem;">Back to Dashboard</a>
+</div>
+<div class="step-bar">
+    <a href="/goals/{{ goal.id }}/contacts" class="step-item completed">
+        <span class="step-num">&#10003;</span> Contacts
+    </a>
+    <a href="/goals/{{ goal.id }}/templates" class="step-item completed">
+        <span class="step-num">&#10003;</span> Templates
+    </a>
+    <a href="/goals/{{ goal.id }}/outreach" class="step-item active">
+        <span class="step-num">3</span> Outreach
+    </a>
+    <a href="/goals/{{ goal.id }}/inbox" class="step-item">
+        <span class="step-num">4</span> Inbox
+    </a>
+</div>
+{% endblock %}
+
 {% block content %}
-<nav style="margin-bottom: 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem;">
-    <a href="/goals/{{ goal.id }}/contacts">Contacts</a>
-    <span style="opacity: 0.4;">&rarr;</span>
-    <a href="/goals/{{ goal.id }}/templates">Templates</a>
-    <span style="opacity: 0.4;">&rarr;</span>
-    <strong>Outreach</strong>
-    <span style="opacity: 0.4;">&rarr;</span>
-    <a href="/goals/{{ goal.id }}/inbox">Inbox</a>
-</nav>
-<hgroup>
-    <h1>Outreach Messages</h1>
-    <p>{{ goal.description }}</p>
-</hgroup>
+<h2>Outreach Messages</h2>
 
 {% if messages %}
 <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
     <span>{{ messages | length }} messages</span>
-    <span>·</span>
+    <span>&middot;</span>
     <span>{{ messages | selectattr('status', 'equalto', 'draft') | list | length }} drafts</span>
-    <span>·</span>
+    <span>&middot;</span>
     <span>{{ messages | selectattr('status', 'equalto', 'approved') | list | length }} approved</span>
-    <span>·</span>
+    <span>&middot;</span>
     <span>{{ messages | selectattr('status', 'equalto', 'sent') | list | length }} sent</span>
 </div>
 
@@ -43,7 +55,6 @@ document.body.addEventListener('htmx:afterRequest', function(evt) {
         btn.removeAttribute('aria-busy');
         btn.disabled = false;
     });
-    // Reload page to update counters
     if (evt.detail.elt.id === 'approve-all-btn' || evt.detail.elt.id === 'send-all-btn') {
         window.location.reload();
     }

@@ -2,11 +2,32 @@
 
 {% block title %}Choose Template - AI Networking Copilot{% endblock %}
 
+{% block campaign_context %}
+<div class="campaign-bar">
+    <div>
+        <div class="campaign-bar-title">{{ goal.description }}</div>
+        <div class="campaign-bar-type">{{ goal.goal_type | capitalize }} Campaign &middot; {{ profile_ids | length }} contacts selected</div>
+    </div>
+    <a href="/" style="font-size: 0.8rem;">Back to Dashboard</a>
+</div>
+<div class="step-bar">
+    <a href="/goals/{{ goal.id }}/contacts" class="step-item completed">
+        <span class="step-num">&#10003;</span> Contacts
+    </a>
+    <a href="/goals/{{ goal.id }}/templates" class="step-item active">
+        <span class="step-num">2</span> Templates
+    </a>
+    <a href="/goals/{{ goal.id }}/outreach" class="step-item">
+        <span class="step-num">3</span> Outreach
+    </a>
+    <a href="/goals/{{ goal.id }}/inbox" class="step-item">
+        <span class="step-num">4</span> Inbox
+    </a>
+</div>
+{% endblock %}
+
 {% block content %}
-<hgroup>
-    <h1>Choose Outreach Template</h1>
-    <p>{{ goal.description }} — <strong>{{ profile_ids | length }}</strong> contacts selected</p>
-</hgroup>
+<h2>Choose Outreach Template</h2>
 
 <form method="post" action="/goals/{{ goal.id }}/generate">
     {% for pid in profile_ids %}

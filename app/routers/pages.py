@@ -114,6 +114,7 @@ async def contacts_page(request: Request, goal_id: int, db: Session = Depends(ge
         "goal": goal,
         "contacts": contacts,
         "existing_profile_ids": existing_ids,
+        "active_page": "campaign",
     })
 
 
@@ -147,6 +148,7 @@ async def templates_page_get(request: Request, goal_id: int, profiles: str = "",
         "profile_ids": profile_ids,
         "outreach_templates": outreach_templates,
         "last_template_id": last_template_id,
+        "active_page": "campaign",
     })
 
 
@@ -181,6 +183,7 @@ async def outreach_page(request: Request, goal_id: int, db: Session = Depends(ge
     return templates.TemplateResponse(request, "outreach.html", {
         "goal": goal,
         "messages": messages,
+        "active_page": "campaign",
     })
 
 

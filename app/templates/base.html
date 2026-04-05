@@ -7,45 +7,228 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <style>
-        nav ul li a.active { font-weight: bold; text-decoration: underline; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
-        .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.8rem; }
-        .badge-positive { background: #d4edda; color: #155724; }
-        .badge-neutral { background: #fff3cd; color: #856404; }
-        .badge-negative { background: #f8d7da; color: #721c24; }
+        :root {
+            --radius: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --brand-color: #4f46e5;
+        }
+        body { background: #f8f9fb; margin: 0; }
+
+        /* Sticky navbar */
+        nav.top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            padding: 0;
+        }
+        nav.top-nav .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+        }
+        nav.top-nav .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+        nav.top-nav .brand svg {
+            flex-shrink: 0;
+        }
+        nav.top-nav .nav-links {
+            display: flex;
+            gap: 0;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 56px;
+            align-items: stretch;
+        }
+        nav.top-nav .nav-links li {
+            display: flex;
+            align-items: stretch;
+        }
+        nav.top-nav .nav-links a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 0 1.1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s ease;
+        }
+        nav.top-nav .nav-links a:hover {
+            color: #111;
+            border-bottom-color: #d1d5db;
+        }
+        nav.top-nav .nav-links a.active {
+            color: var(--brand-color);
+            font-weight: 600;
+            border-bottom-color: var(--brand-color);
+        }
+
+        /* Container */
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 2rem; }
+
+        /* Campaign context bar */
+        .campaign-bar {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius);
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+        .campaign-bar-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+        }
+        .campaign-bar-type {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        /* Step bar */
+        .step-bar {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius);
+            padding: 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .step-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 0.5rem;
+            text-decoration: none;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            border-right: 1px solid #e5e7eb;
+            transition: all 0.15s ease;
+        }
+        .step-item:last-child { border-right: none; }
+        .step-item:hover { background: #f9fafb; }
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .step-item.completed { color: #166534; }
+        .step-item.completed .step-num { background: #dcfce7; color: #166534; }
+        .step-item.active { color: var(--brand-color); font-weight: 600; background: #eef2ff; }
+        .step-item.active .step-num { background: var(--brand-color); color: #fff; }
+
+        /* Cards */
+        article {
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e5e7eb;
+            padding: 1.25rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-positive { background: #dcfce7; color: #166534; }
+        .badge-neutral { background: #fef9c3; color: #854d0e; }
+        .badge-negative { background: #fee2e2; color: #991b1b; }
+
+        /* Stats grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
         .stat-card { text-align: center; padding: 1.5rem; }
-        .stat-card h2 { margin-bottom: 0.25rem; }
+        .stat-card h2 { margin-bottom: 0.25rem; font-size: 2rem; }
+        .stat-card p { margin: 0; opacity: 0.6; font-size: 0.9rem; }
+
+        /* Buttons */
+        button, [role="button"] { border-radius: 8px !important; }
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* HTMX */
         .htmx-indicator { display: none; }
         .htmx-request .htmx-indicator { display: inline; }
         .htmx-request button { opacity: 0.6; pointer-events: none; }
-        /* Toast notifications */
-        .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
-        .toast { padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; animation: toast-in 0.3s ease, toast-out 0.3s ease 2.7s forwards; }
-        .toast-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .toast-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Toasts */
+        .toast-container { position: fixed; top: 4.5rem; right: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.85rem; box-shadow: var(--shadow-md); animation: toast-in 0.3s ease, toast-out 0.3s ease 2.7s forwards; }
+        .toast-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .toast-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         @keyframes toast-in { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
         @keyframes toast-out { from { opacity: 1; } to { opacity: 0; } }
-        /* Responsive chat */
+
+        /* Responsive */
         @media (max-width: 768px) {
             .chat-layout { grid-template-columns: 1fr !important; height: auto !important; }
-            .chat-sidebar { max-height: 200px; border-right: none !important; border-bottom: 1px solid var(--pico-muted-border-color); }
+            .chat-sidebar { max-height: 200px; border-right: none !important; border-bottom: 1px solid #e5e7eb; }
+            .step-bar { flex-wrap: wrap; }
+            .step-item { flex: unset; width: 50%; }
         }
     </style>
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="container">
-        <ul>
-            <li><strong>AI Networking Copilot</strong></li>
-        </ul>
-        <ul>
-            <li><a href="/" {% if active_page == "dashboard" %}class="active"{% endif %}>Dashboard</a></li>
-            <li><a href="/goals/new" {% if active_page == "goals" %}class="active"{% endif %}>New Campaign</a></li>
-            <li><a href="/inbox" {% if active_page == "inbox" %}class="active"{% endif %}>Inbox</a></li>
-        </ul>
+    <nav class="top-nav">
+        <div class="nav-inner">
+            <a href="/" class="brand">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #4f46e5;">
+                    <circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/>
+                    <line x1="5" y1="8" x2="12" y2="16"/><line x1="19" y1="8" x2="12" y2="16"/>
+                    <line x1="5" y1="6" x2="19" y2="6"/>
+                </svg>
+                AI Networking Copilot
+            </a>
+            <ul class="nav-links">
+                <li><a href="/" {% if active_page == "dashboard" %}class="active"{% endif %}>Dashboard</a></li>
+                <li><a href="/goals/new" {% if active_page == "goals" %}class="active"{% endif %}>New Campaign</a></li>
+                <li><a href="/inbox" {% if active_page == "inbox" %}class="active"{% endif %}>Inbox</a></li>
+            </ul>
+        </div>
     </nav>
     <main class="container">
+        {% block campaign_context %}{% endblock %}
         {% block content %}{% endblock %}
     </main>
     <div class="toast-container" id="toast-container"></div>
