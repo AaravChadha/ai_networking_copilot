@@ -2,6 +2,53 @@
 
 {% block title %}Outreach - AI Networking Copilot{% endblock %}
 
+{% block head %}
+<style>
+    .progress-bar-bg {
+        background: #e5e7eb;
+        border-radius: 6px;
+        height: 8px;
+        overflow: hidden;
+        display: flex;
+    }
+    .progress-bar-bg .seg-sent {
+        background: #3b82f6;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .progress-bar-bg .seg-approved {
+        background: #22c55e;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .progress-bar-bg .seg-draft {
+        background: #f59e0b;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .progress-legend {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: 0.4rem;
+    }
+    .progress-legend span::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.3rem;
+        vertical-align: middle;
+    }
+    .legend-draft::before { background: #f59e0b; }
+    .legend-approved::before { background: #22c55e; }
+    .legend-sent::before { background: #3b82f6; }
+    .legend-replied::before { background: #8b5cf6; }
+</style>
+{% endblock %}
+
 {% block campaign_context %}
 <div class="campaign-bar">
     <div>
@@ -10,6 +57,7 @@
     </div>
     <a href="/" style="font-size: 0.8rem;">Back to Dashboard</a>
 </div>
+{% set has_sent = messages and (messages | selectattr('status', 'equalto', 'sent') | list | length > 0 or messages | selectattr('status', 'equalto', 'replied') | list | length > 0) %}
 <div class="step-bar">
     <a href="/goals/{{ goal.id }}/contacts" class="step-item completed">
         <span class="step-num">&#10003;</span> Contacts
@@ -20,9 +68,15 @@
     <a href="/goals/{{ goal.id }}/outreach" class="step-item active">
         <span class="step-num">3</span> Outreach
     </a>
+    {% if has_sent %}
     <a href="/goals/{{ goal.id }}/inbox" class="step-item">
         <span class="step-num">4</span> Inbox
     </a>
+    {% else %}
+    <span class="step-item" style="opacity: 0.4; cursor: not-allowed;">
+        <span class="step-num">4</span> Inbox
+    </span>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -30,31 +84,48 @@
 <h2>Outreach Messages</h2>
 
 {% if messages %}
-<div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
-    <span>{{ messages | length }} messages</span>
-    <span>&middot;</span>
-    <span>{{ messages | selectattr('status', 'equalto', 'draft') | list | length }} drafts</span>
-    <span>&middot;</span>
-    <span>{{ messages | selectattr('status', 'equalto', 'approved') | list | length }} approved</span>
-    <span>&middot;</span>
-    <span>{{ messages | selectattr('status', 'equalto', 'sent') | list | length }} sent</span>
+{% set drafts = messages | selectattr('status', 'equalto', 'draft') | list | length %}
+{% set approved = messages | selectattr('status', 'equalto', 'approved') | list | length %}
+{% set sent = messages | selectattr('status', 'equalto', 'sent') | list | length %}
+{% set replied = messages | selectattr('status', 'equalto', 'replied') | list | length %}
+{% set total = messages | length %}
+
+{# Progress bar #}
+<div style="margin-bottom: 1.5rem;">
+    <div class="progress-bar-bg">
+        {% if sent + replied > 0 %}<div class="seg-sent" style="width: {{ ((sent + replied) / total * 100) | round }}%;"></div>{% endif %}
+        {% if approved > 0 %}<div class="seg-approved" style="width: {{ (approved / total * 100) | round }}%;"></div>{% endif %}
+        {% if drafts > 0 %}<div class="seg-draft" style="width: {{ (drafts / total * 100) | round }}%;"></div>{% endif %}
+    </div>
+    <div class="progress-legend">
+        {% if drafts > 0 %}<span class="legend-draft"><strong>{{ drafts }}</strong> draft{{ 's' if drafts != 1 }}</span>{% endif %}
+        {% if approved > 0 %}<span class="legend-approved"><strong>{{ approved }}</strong> approved</span>{% endif %}
+        {% if sent > 0 %}<span class="legend-sent"><strong>{{ sent }}</strong> sent</span>{% endif %}
+        {% if replied > 0 %}<span class="legend-replied"><strong>{{ replied }}</strong> replied</span>{% endif %}
+        <span style="opacity: 0.5;">{{ total }} total</span>
+    </div>
 </div>
 
+{# Action buttons #}
 <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-    <button id="approve-all-btn" hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this" class="outline">
-        Approve All Drafts <span class="htmx-indicator" aria-busy="true"></span>
+    {% if drafts > 0 %}
+    <button id="approve-all-btn" hx-post="/api/goals/{{ goal.id }}/approve-all" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this">
+        Approve All Drafts ({{ drafts }}) <span class="htmx-indicator" aria-busy="true"></span>
     </button>
-    <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this" class="outline">
-        Send All Approved <span class="htmx-indicator" aria-busy="true"></span>
+    {% endif %}
+    {% if approved > 0 %}
+    <button id="send-all-btn" hx-post="/api/goals/{{ goal.id }}/send-batch" hx-target="#message-list" hx-swap="innerHTML" hx-indicator="this" class="{{ '' if drafts == 0 else 'outline' }}">
+        Send All Approved ({{ approved }}) <span class="htmx-indicator" aria-busy="true"></span>
     </button>
+    {% elif drafts > 0 %}
+    <button disabled class="outline secondary" style="opacity: 0.4; cursor: not-allowed; margin-bottom: 0;">
+        Send All Approved (0)
+    </button>
+    {% endif %}
 </div>
 
 <script>
 document.body.addEventListener('htmx:afterRequest', function(evt) {
-    document.querySelectorAll('#approve-all-btn, #send-all-btn').forEach(function(btn) {
-        btn.removeAttribute('aria-busy');
-        btn.disabled = false;
-    });
     if (evt.detail.elt.id === 'approve-all-btn' || evt.detail.elt.id === 'send-all-btn') {
         window.location.reload();
     }
