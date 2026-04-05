@@ -55,6 +55,33 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
             "negative": sum(1 for r in inbound if r.sentiment == "negative"),
         }
 
+    # Recent activity — latest inbound replies with profile info (all + per-goal)
+    recent_activity = []
+    goal_activity = {}
+    if msg_ids:
+        recent_replies = (
+            db.query(Reply)
+            .filter(Reply.message_id.in_(msg_ids), Reply.direction == "inbound")
+            .order_by(Reply.reply_at.desc())
+            .all()
+        )
+        for r in recent_replies:
+            msg = next((m for m in all_messages if m.id == r.message_id), None)
+            if msg and msg.profile:
+                entry = {
+                    "name": msg.profile.name,
+                    "sentiment": r.sentiment,
+                    "date": r.reply_at,
+                    "goal_id": msg.goal_id,
+                    "message_id": msg.id,
+                }
+                if len(recent_activity) < 5:
+                    recent_activity.append(entry)
+                if msg.goal_id not in goal_activity:
+                    goal_activity[msg.goal_id] = []
+                if len(goal_activity[msg.goal_id]) < 5:
+                    goal_activity[msg.goal_id].append(entry)
+
     return templates.TemplateResponse(request, "dashboard.html", {
         "goals": goals,
         "total_sent": total_sent,
@@ -62,6 +89,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         "total_reply_rate": total_reply_rate,
         "total_pending": total_pending,
         "goal_stats": goal_stats,
+        "recent_activity": recent_activity,
+        "goal_activity": goal_activity,
         "active_page": "dashboard",
     })
 

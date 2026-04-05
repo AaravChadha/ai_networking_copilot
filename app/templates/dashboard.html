@@ -193,6 +193,22 @@
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
                     </div>
                 </div>
+                {% if recent_activity %}
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0.75rem 0;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.5rem;">Recent activity</div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    {% for a in recent_activity %}
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ '#22c55e' if a.sentiment == 'positive' else ('#f59e0b' if a.sentiment == 'neutral' else '#ef4444') }}; flex-shrink: 0;"></span>
+                        <span style="color: var(--text-primary); flex: 1;">{{ a.name }} <span style="color: var(--text-muted);">replied</span></span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem;">{{ a.date.strftime('%b %d') }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <a href="/inbox" style="font-size: 0.8rem;">View all in Inbox &rarr;</a>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -227,6 +243,22 @@
                         <div class="label"><span class="dot" style="background: #22c55e;"></span>Replied</div>
                     </div>
                 </div>
+                {% if goal_activity.get(g.id) %}
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0.75rem 0;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.5rem;">Recent activity</div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    {% for a in goal_activity[g.id] %}
+                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ '#22c55e' if a.sentiment == 'positive' else ('#f59e0b' if a.sentiment == 'neutral' else '#ef4444') }}; flex-shrink: 0;"></span>
+                        <span style="color: var(--text-primary); flex: 1;">{{ a.name }} <span style="color: var(--text-muted);">replied</span></span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem;">{{ a.date.strftime('%b %d') }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <a href="/goals/{{ g.id }}/inbox" style="font-size: 0.8rem;">View in Inbox &rarr;</a>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
