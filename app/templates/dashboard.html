@@ -4,29 +4,91 @@
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-doughnutlabel-v3@1.1.2/dist/chartjs-plugin-doughnutlabel-v3.min.js"></script>
+<style>
+    .stat-card-accent {
+        text-align: center;
+        padding: 1.25rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card-accent::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+    }
+    .stat-card-accent.accent-indigo::before { background: #4f46e5; }
+    .stat-card-accent.accent-blue::before { background: #3b82f6; }
+    .stat-card-accent.accent-green::before { background: #22c55e; }
+    .stat-card-accent.accent-amber::before { background: #f59e0b; }
+    .stat-card-accent .stat-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.35rem;
+    }
+    .stat-card-accent h2 {
+        margin: 0 0 0.15rem;
+        font-size: 1.8rem;
+    }
+    .stat-card-accent p {
+        margin: 0;
+        font-size: 0.85rem;
+        opacity: 0.6;
+    }
+    .stat-card-accent .stat-sub {
+        font-size: 0.75rem;
+        opacity: 0.5;
+        margin-top: 0.2rem;
+    }
+    a.stat-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    a.stat-card-link:hover article {
+        border-color: #4f46e5;
+        box-shadow: 0 2px 8px rgba(79,70,229,0.12);
+    }
+    .chart-card {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <h1>Dashboard</h1>
 
 {% if goals %}
+{# Stat cards with icons and accent borders #}
 <div class="stats-grid" style="margin-bottom: 2rem;">
-    <article class="stat-card">
+    <article class="stat-card-accent accent-indigo">
+        <div class="stat-icon">📊</div>
         <h2>{{ goals | length }}</h2>
         <p>Campaigns</p>
     </article>
-    <article class="stat-card">
+    <article class="stat-card-accent accent-blue">
+        <div class="stat-icon">✉️</div>
         <h2>{{ total_sent }}</h2>
         <p>Messages Sent</p>
     </article>
-    <article class="stat-card">
+    <article class="stat-card-accent accent-green">
+        <div class="stat-icon">💬</div>
         <h2>{{ total_replies }}</h2>
-        <p>Replies ({{ total_reply_rate }}%)</p>
+        <p>Replies</p>
+        <div class="stat-sub">{{ total_reply_rate }}% reply rate</div>
     </article>
-    <article class="stat-card">
-        <h2>{{ total_pending }}</h2>
-        <p>Pending Follow-ups</p>
-    </article>
+    <a href="/inbox" class="stat-card-link">
+        <article class="stat-card-accent accent-amber">
+            <div class="stat-icon">⏳</div>
+            <h2>{{ total_pending }}</h2>
+            <p>Pending Follow-ups</p>
+            <div class="stat-sub">Click to view</div>
+        </article>
+    </a>
 </div>
 
 {% set all_pending = goal_stats.values() | map(attribute='pending') | sum %}
@@ -35,11 +97,12 @@
 {% set all_pos = goal_stats.values() | map(attribute='positive') | sum %}
 {% set all_neu = goal_stats.values() | map(attribute='neutral') | sum %}
 {% set all_neg = goal_stats.values() | map(attribute='negative') | sum %}
+{% set all_total_replies = all_pos + all_neu + all_neg %}
 
 <div style="margin-bottom: 2rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 style="margin: 0;">Campaign Details</h3>
-        <select id="campaignSelect" onchange="switchCampaign(this.value)" style="width: auto; margin: 0;">
+        <h3 style="margin: 0; line-height: 1;">Campaign Details</h3>
+        <select id="campaignSelect" onchange="switchCampaign(this.value)" style="width: auto; margin: 0; padding: 0.4rem 0.75rem;">
             <option value="all" selected>All Campaigns</option>
             {% for g in goals | reverse %}
             <option value="{{ g.id }}">{{ g.description[:40] }}{% if g.description|length > 40 %}...{% endif %}</option>
@@ -50,29 +113,46 @@
     {# All campaigns combined #}
     <div class="campaign-detail" id="campaign-all">
         <div class="grid">
-            <article>
-                <h4 style="text-align: center;">Sentiment</h4>
+            <div class="chart-card">
+                <h4 style="text-align: center; margin-top: 0;">Sentiment</h4>
+                {% if all_total_replies > 0 %}
                 <canvas id="sentimentChart-all" style="max-height: 250px;"></canvas>
-            </article>
-            <article>
-                <h4 style="text-align: center;">Messages</h4>
+                {% else %}
+                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
+                {% endif %}
+            </div>
+            <div class="chart-card">
+                <h4 style="text-align: center; margin-top: 0;">Messages</h4>
+                {% if all_pending > 0 or all_sent_only > 0 or all_replied > 0 %}
                 <canvas id="barChart-all" style="max-height: 250px;"></canvas>
-            </article>
+                {% else %}
+                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No messages yet</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 
     {% for g in goals %}
     {% set s = goal_stats[g.id] %}
+    {% set g_total = s.positive + s.neutral + s.negative %}
     <div class="campaign-detail" id="campaign-{{ g.id }}" style="display: none;">
         <div class="grid">
-            <article>
-                <h4 style="text-align: center;">Sentiment</h4>
+            <div class="chart-card">
+                <h4 style="text-align: center; margin-top: 0;">Sentiment</h4>
+                {% if g_total > 0 %}
                 <canvas id="sentimentChart-{{ g.id }}" style="max-height: 250px;"></canvas>
-            </article>
-            <article>
-                <h4 style="text-align: center;">Messages</h4>
+                {% else %}
+                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No replies yet</p>
+                {% endif %}
+            </div>
+            <div class="chart-card">
+                <h4 style="text-align: center; margin-top: 0;">Messages</h4>
+                {% if s.pending > 0 or s.sent_only > 0 or s.replied > 0 %}
                 <canvas id="barChart-{{ g.id }}" style="max-height: 250px;"></canvas>
-            </article>
+                {% else %}
+                <p style="text-align: center; opacity: 0.5; padding: 3rem 0;">No messages yet</p>
+                {% endif %}
+            </div>
         </div>
         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
             <a href="/goals/{{ g.id }}/outreach" role="button" class="outline" style="margin-bottom: 0; flex: 1; text-align: center;">View Campaign</a>
@@ -83,8 +163,41 @@
 </div>
 
 <script>
+{# Donut center label plugin #}
+const centerLabelPlugin = {
+    id: 'centerLabel',
+    afterDraw(chart) {
+        if (chart.config.type !== 'doughnut') return;
+        const centerText = chart.config.options?.plugins?.centerLabel?.text;
+        if (!centerText) return;
+        const { ctx, chartArea: { left, right, top, bottom } } = chart;
+        const cx = (left + right) / 2;
+        const cy = (top + bottom) / 2;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillStyle = '#374151';
+        ctx.fillText(centerText, cx, cy);
+        ctx.restore();
+    }
+};
+Chart.register(centerLabelPlugin);
+
+function makeDoughnutOpts(centerText) {
+    return {
+        responsive: true,
+        cutout: '55%',
+        plugins: {
+            legend: { position: 'bottom' },
+            centerLabel: { text: centerText }
+        }
+    };
+}
+
 {# All campaigns combined charts #}
-{% if all_pos or all_neu or all_neg %}
+{% if all_total_replies > 0 %}
+{% set dominant = 'Mostly Positive' if all_pos >= all_neu and all_pos >= all_neg else ('Mostly Neutral' if all_neu >= all_neg else 'Mostly Negative') %}
 new Chart(document.getElementById('sentimentChart-all'), {
     type: 'doughnut',
     data: {
@@ -96,16 +209,18 @@ new Chart(document.getElementById('sentimentChart-all'), {
             borderWidth: 1
         }]
     },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    options: makeDoughnutOpts('{{ all_total_replies }} replies')
 });
 {% endif %}
+{% if all_pending > 0 or all_sent_only > 0 or all_replied > 0 %}
 new Chart(document.getElementById('barChart-all'), {
     type: 'bar',
     data: {
-        labels: ['Pending', 'Sent', 'Replied'],
+        labels: [{% if all_pending > 0 %}'Pending',{% endif %}{% if all_sent_only > 0 %}'Sent',{% endif %}{% if all_replied > 0 %}'Replied',{% endif %}],
         datasets: [{
-            data: [{{ all_pending }}, {{ all_sent_only }}, {{ all_replied }}],
-            backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e']
+            data: [{% if all_pending > 0 %}{{ all_pending }},{% endif %}{% if all_sent_only > 0 %}{{ all_sent_only }},{% endif %}{% if all_replied > 0 %}{{ all_replied }},{% endif %}],
+            backgroundColor: [{% if all_pending > 0 %}'#f59e0b',{% endif %}{% if all_sent_only > 0 %}'#3b82f6',{% endif %}{% if all_replied > 0 %}'#22c55e',{% endif %}],
+            borderRadius: 6
         }]
     },
     options: {
@@ -114,11 +229,14 @@ new Chart(document.getElementById('barChart-all'), {
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
     }
 });
+{% endif %}
 
 {# Per-campaign charts #}
 {% for g in goals %}
 {% set s = goal_stats[g.id] %}
-{% if s.positive or s.neutral or s.negative %}
+{% set g_total = s.positive + s.neutral + s.negative %}
+{% if g_total > 0 %}
+{% set g_dominant = 'Mostly Positive' if s.positive >= s.neutral and s.positive >= s.negative else ('Mostly Neutral' if s.neutral >= s.negative else 'Mostly Negative') %}
 new Chart(document.getElementById('sentimentChart-{{ g.id }}'), {
     type: 'doughnut',
     data: {
@@ -130,16 +248,18 @@ new Chart(document.getElementById('sentimentChart-{{ g.id }}'), {
             borderWidth: 1
         }]
     },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    options: makeDoughnutOpts('{{ g_total }} replies')
 });
 {% endif %}
+{% if s.pending > 0 or s.sent_only > 0 or s.replied > 0 %}
 new Chart(document.getElementById('barChart-{{ g.id }}'), {
     type: 'bar',
     data: {
-        labels: ['Pending', 'Sent', 'Replied'],
+        labels: [{% if s.pending > 0 %}'Pending',{% endif %}{% if s.sent_only > 0 %}'Sent',{% endif %}{% if s.replied > 0 %}'Replied',{% endif %}],
         datasets: [{
-            data: [{{ s.pending }}, {{ s.sent_only }}, {{ s.replied }}],
-            backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e']
+            data: [{% if s.pending > 0 %}{{ s.pending }},{% endif %}{% if s.sent_only > 0 %}{{ s.sent_only }},{% endif %}{% if s.replied > 0 %}{{ s.replied }},{% endif %}],
+            backgroundColor: [{% if s.pending > 0 %}'#f59e0b',{% endif %}{% if s.sent_only > 0 %}'#3b82f6',{% endif %}{% if s.replied > 0 %}'#22c55e',{% endif %}],
+            borderRadius: 6
         }]
     },
     options: {
@@ -148,6 +268,7 @@ new Chart(document.getElementById('barChart-{{ g.id }}'), {
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
     }
 });
+{% endif %}
 {% endfor %}
 
 function switchCampaign(id) {
@@ -162,33 +283,32 @@ function switchCampaign(id) {
 <article style="margin-bottom: 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
         <div>
-            <strong style="font-size: 1.05rem;">{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
+            <strong style="font-size: 1.05rem; text-transform: capitalize;">{{ goal.description[:60] }}{% if goal.description|length > 60 %}...{% endif %}</strong>
             <br><small style="opacity: 0.5;">{{ goal.goal_type | capitalize }} · {{ goal.created_at.strftime('%b %d, %Y') }}</small>
         </div>
-        <span class="badge badge-positive">{{ goal.status }}</span>
+        <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #166534;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
+            {{ goal.status | capitalize }}
+        </span>
     </div>
-    <div class="stats-grid" style="margin-bottom: 1rem;">
-        <div style="text-align: center;">
-            <strong>{{ stats.sent }}</strong><br><small>Sent</small>
-        </div>
-        <div style="text-align: center;">
-            <strong>{{ stats.replies }}</strong><br><small>Replies ({{ stats.reply_rate }}%)</small>
-        </div>
-        <div style="text-align: center;">
-            <span style="color: #166534;">{{ stats.positive }}</span> /
-            <span style="color: #854d0e;">{{ stats.neutral }}</span> /
-            <span style="color: #991b1b;">{{ stats.negative }}</span>
-            <br><small>Pos / Neu / Neg</small>
-        </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+        <span style="font-size: 0.85rem;"><strong>{{ stats.sent }}</strong> sent</span>
+        <span style="opacity: 0.3;">·</span>
+        <span style="font-size: 0.85rem;"><strong>{{ stats.replies }}</strong> replies ({{ stats.reply_rate }}%)</span>
+        <span style="opacity: 0.3;">·</span>
+        <span class="badge badge-positive" style="font-size: 0.7rem;">{{ stats.positive }} pos</span>
+        <span class="badge badge-neutral" style="font-size: 0.7rem;">{{ stats.neutral }} neu</span>
+        <span class="badge badge-negative" style="font-size: 0.7rem;">{{ stats.negative }} neg</span>
     </div>
-    <div style="display: flex; gap: 0.5rem;">
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="/goals/{{ goal.id }}/outreach" role="button" class="outline" style="margin-bottom: 0;">View Campaign</a>
         <a href="/goals/{{ goal.id }}/inbox" role="button" class="outline secondary" style="margin-bottom: 0;">Inbox</a>
-        <button class="outline secondary" onclick="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="margin-bottom: 0;">Delete</button>
+        <span style="flex: 1;"></span>
+        <a href="#" onclick="event.preventDefault(); this.style.display='none'; this.nextElementSibling.style.display='flex';" style="font-size: 0.8rem; color: #dc2626; text-decoration: none;">Delete</a>
         <span style="display: none; gap: 0.5rem; align-items: center;">
-            <small>Are you sure?</small>
-            <button class="outline secondary" hx-delete="/api/goals/{{ goal.id }}" hx-target="closest article" hx-swap="outerHTML" style="margin-bottom: 0; color: #dc2626; border-color: #dc2626;">Yes, delete</button>
-            <button class="outline secondary" onclick="this.parentElement.style.display='none'; this.parentElement.previousElementSibling.style.display='';" style="margin-bottom: 0;">Cancel</button>
+            <small>Sure?</small>
+            <a href="#" style="font-size: 0.8rem; color: #dc2626; font-weight: 600; text-decoration: none;" hx-delete="/api/goals/{{ goal.id }}" hx-target="closest article" hx-swap="outerHTML">Yes</a>
+            <a href="#" onclick="event.preventDefault(); this.parentElement.style.display='none'; this.parentElement.previousElementSibling.style.display='';" style="font-size: 0.8rem; color: #6b7280; text-decoration: none;">No</a>
         </span>
     </div>
 </article>
