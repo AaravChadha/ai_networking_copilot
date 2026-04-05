@@ -39,9 +39,15 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         g_ids = [m.id for m in msgs]
         inbound = [r for r in all_inbound if r.message_id in set(g_ids)]
         replies = len({r.message_id for r in inbound})
+        pending = sum(1 for m in msgs if m.status in ("draft", "approved"))
+        sent_only = sum(1 for m in msgs if m.status == "sent")
+        replied = sum(1 for m in msgs if m.status == "replied")
         goal_stats[goal.id] = {
             "total": len(msgs),
+            "pending": pending,
             "sent": sent,
+            "sent_only": sent_only,
+            "replied": replied,
             "replies": replies,
             "reply_rate": round(replies / sent * 100, 1) if sent > 0 else 0,
             "positive": sum(1 for r in inbound if r.sentiment == "positive"),

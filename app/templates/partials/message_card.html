@@ -1,5 +1,5 @@
 <article id="message-{{ msg.id }}" style="margin-bottom: 1rem;">
-    <header style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
         <div>
             <strong>{{ msg.profile.name }}</strong> — {{ msg.profile.role }} at {{ msg.profile.company }}
         </div>
@@ -14,7 +14,7 @@
             <span class="badge badge-positive">Replied</span>
             {% endif %}
         </div>
-    </header>
+    </div>
 
     <p><strong>Subject:</strong> {{ msg.subject }}</p>
 

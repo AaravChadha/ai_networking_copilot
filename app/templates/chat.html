@@ -127,17 +127,12 @@
         <div class="chat-messages" id="chat-messages">
             {# Original outreach #}
             <div class="bubble-you chat-bubble">
-                <div class="bubble-label">You (initial outreach)</div>
                 {{ active_thread.message.body }}
             </div>
 
             {# Thread replies #}
             {% for reply in active_thread.replies %}
             <div class="chat-bubble {{ 'bubble-them' if reply.direction == 'inbound' else 'bubble-you' }}">
-                <div class="bubble-label">
-                    {{ active_thread.message.profile.name if reply.direction == 'inbound' else 'You' }}
-                    {% if reply.is_conclusion %} · Final reply{% endif %}
-                </div>
                 {{ reply.body }}
             </div>
             {% endfor %}
@@ -156,16 +151,12 @@
                         formaction="/api/replies/{{ active_thread.latest_inbound.id }}/skip-followup">Skip</button>
                 </div>
             </form>
-            {% elif active_thread.is_concluded %}
-                {% if active_thread.sentiment == 'positive' %}
-                <small style="color: #155724;">Conversation concluded positively</small>
-                {% elif active_thread.sentiment == 'negative' %}
-                <small style="color: #721c24;">Conversation concluded — declined</small>
-                {% else %}
-                <small style="color: #856404;">Conversation concluded</small>
-                {% endif %}
-            {% elif active_thread.latest_inbound and active_thread.latest_inbound.follow_up_status == 'sent' %}
-                <small style="opacity: 0.6;">Waiting for reply...</small>
+            {% else %}
+            <form method="post" action="/api/messages/{{ active_thread.message.id }}/reply">
+                <input type="hidden" name="redirect" value="/goals/{{ goal.id }}/inbox/{{ active_thread.message.id }}">
+                <input type="text" name="body" placeholder="Type a message..." style="margin-bottom: 0.5rem; font-size: 0.85rem;">
+                <button type="submit">Send</button>
+            </form>
             {% endif %}
         </div>
 
